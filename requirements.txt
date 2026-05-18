@@ -24,13 +24,13 @@ Pillow==11.0.0
 requests==2.32.3
 
 
-# SMS Provider (Kavenegar)
-kavenegar==1.4.2
+# # SMS Provider (Kavenegar)
+# kavenegar==1.4.2
 
-# Production Server
-gunicorn==23.0.0
+# # Production Server
+# gunicorn==23.0.0
 
 
-# Code Documentation tools
-drf-yasg==1.21.8
-drf-spectacular[sidecar]==0.28.0 
+# # Code Documentation tools
+# drf-yasg==1.21.8
+# drf-spectacular[sidecar]==0.28.0 
