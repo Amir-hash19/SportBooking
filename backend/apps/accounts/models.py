@@ -23,14 +23,15 @@ class CustomUserManager(BaseUserManager):
        
         user = self.model(
             name=name,
-            lastname=last_name,
-            phonenumber=phone_number,
+            last_name=last_name,
+            phone_number=phone_number,
             email=self.normalize_email(email) if email else None,
             accepted_role=accepted_role,  
             **extra_fields
         )
         user.set_password(password)
         user.save(using=self._db)
+
         return user
     
 
@@ -50,8 +51,8 @@ class CustomUserManager(BaseUserManager):
        
         return self.create_user(
             name=name,
-            lastname=last_name,
-            phonenumber=phone_number,
+            last_name=last_name,
+            phone_number=phone_number,
             email=email,
             password=password,
             **extra_fields
@@ -84,7 +85,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     
     USERNAME_FIELD = "phone_number"
-    REQUIRED_FIELDS = ['name','last_name']
+    REQUIRED_FIELDS = ['name','last_name','email']
 
     objects = CustomUserManager()
 
