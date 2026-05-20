@@ -7,7 +7,7 @@ from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, name, last_name, phone_number, password, email=None,  accepted_role=False, **extra_fields):
+    def create_user(self, name, last_name, phone_number, password, email=None, **extra_fields):
 
         """
         this method create user account with given args and kwargs
@@ -27,9 +27,6 @@ class CustomUserManager(BaseUserManager):
         
         if not name and not last_name:
             raise ValueError("Enter Name and lastname please!")    
-      
-        if not accepted_role:
-            raise ValueError("please read and accept the roles before creating account!")
         
         if not password:
             raise ValueError("Password is required")
@@ -40,7 +37,6 @@ class CustomUserManager(BaseUserManager):
             last_name=last_name,
             phone_number=phone_number,
             email=self.normalize_email(email) if email else None,
-            accepted_role=accepted_role,  
             **extra_fields
         )
         user.set_password(password)
@@ -61,7 +57,6 @@ class CustomUserManager(BaseUserManager):
         '''
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('accepted_role', True)  
         
         
         if extra_fields.get('is_staff') is not True:
@@ -88,7 +83,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=150)
     phone_number = PhoneNumberField(unique=True)
     email = models.EmailField(unique=True, null=True, blank=True)
-    accepted_role = models.BooleanField(default=False)
+    national_id = models.CharField(max_length=10,unique=True,null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
