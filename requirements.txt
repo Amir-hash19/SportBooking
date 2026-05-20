@@ -22,6 +22,8 @@ djangorestframework-api-key==3.0.0
 python-decouple==3.8
 Pillow==11.0.0
 requests==2.32.3
+django-phonenumber-field==8.4.0
+phonenumbers==9.0.30
 
 
 # # SMS Provider (Kavenegar)

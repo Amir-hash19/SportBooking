@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'phonenumber_field',
     
     # My apps
     'backend.apps.accounts.apps.AccountsConfig',
@@ -104,6 +105,8 @@ DATABASES = {
     }
 }
 
+
+AUTH_USER_MODEL = 'accounts.UserAccount'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
