@@ -66,9 +66,21 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, null=True, blank=True)
     accepted_role = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    groups = models.ManyToManyField('auth.Group',related_name='useraccount_set', blank=True)
+    user_permissions = models.ManyToManyField('auth.Permission',related_name='useraccount_set',blank=True)
+
     date_created = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['last_name', 'name']),  
+            models.Index(fields=['email']),
+        ]
+        ordering = ['-date_created']
+      
 
     
     USERNAME_FIELD = "phone_number"
@@ -84,7 +96,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
 class Profile(models.Model):
     user = models.OneToOneField(to=UserAccount, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='/media/', null=True, blank=True)
+    avatar = models.ImageField(upload_to='media', null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     address = models.TextField(null=True, blank=True)
 
