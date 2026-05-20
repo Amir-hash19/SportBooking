@@ -8,6 +8,20 @@ from django.db import models
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, name, last_name, phone_number, password, email=None,  accepted_role=False, **extra_fields):
+
+        """
+        this method create user account with given args and kwargs
+        
+        :self: inherited from BaseUserManager
+        :name: user must set name for itself which is an charfield
+        :last_name: user must set last_name for itself 
+        :phone_number: using third_party package for validating phone number field
+        :password: password will be hashed before saving in data base
+        :email: email will be controled by Email field of Django and this is optioanl one
+        :accepted_role: users should read and accept the roles of the platform
+        :extra_fields: ....
+        """
+
         if not phone_number:
             raise ValueError("phone number is required")
         
@@ -36,6 +50,15 @@ class CustomUserManager(BaseUserManager):
     
 
     def create_superuser(self, name, last_name, phone_number, email, password, **extra_fields):
+        '''
+        Docstring for create_superuser
+        
+        last Docstring completed this one
+        is superuser creator the fields like
+        is_superuser, is_active and is_staff 
+        will be set automatically
+
+        '''
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('accepted_role', True)  
@@ -96,6 +119,19 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
 
 class Profile(models.Model):
+    """
+    Docstring for Profile Model
+
+    every user can have one profile and 
+    each profile is belongs to each user 
+    most of the fields are OPTIONAL and 
+    for futher informations
+
+    Note: after creating user account by user 
+          the profile record will be created 
+          simultaneously users can not create
+          profile  
+    """
     user = models.OneToOneField(to=UserAccount, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='media', null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)

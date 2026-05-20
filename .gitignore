@@ -1,6 +1,33 @@
 /venv
 .env
 db.sqlite3
-/__pycache____pycache__/
+/__pycache__
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+*.log
+*.pot
 *.pyc
-*.pyo
+db.sqlite3
+db.sqlite3-journal
+/media
+/static
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+EOF
+>>>>>>> develop
