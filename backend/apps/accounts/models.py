@@ -172,6 +172,17 @@ class Profile(models.Model):
     medical_fame = models.TextField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+    @property
+    def is_complete(self):
+        return bool(
+            self.birth_date and 
+            self.gender and 
+            self.second_number and 
+            self.address 
+        )
+
+
     def __str__(self):
         return f"{self.user.name} {self.gender}"
 
