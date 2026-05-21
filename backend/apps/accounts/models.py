@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import Group
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -31,6 +32,10 @@ class CustomUserManager(BaseUserManager):
         if not password:
             raise ValueError("Password is required")
         
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        extra_fields.setdefault('is_complex_manager', False)
+        
        
         user = self.model(
             name=name,
@@ -44,6 +49,22 @@ class CustomUserManager(BaseUserManager):
 
         return user
     
+    def create_complex_manager(self, phone_number, name, last_name, email, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_complex_manager', True)
+
+        user = self.create_user(
+            phone_number=phone_number,
+            name=name,
+            last_name=last_name,
+            email=email,
+            password=password,
+            **extra_fields
+        )
+
+        return user
+
+
 
     def create_superuser(self, name, last_name, phone_number, email, password, **extra_fields):
         '''
@@ -67,7 +88,7 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Superuser must have a password")
         
        
-        return self.create_user(
+        user = self.create_user(
             name=name,
             last_name=last_name,
             phone_number=phone_number,
@@ -76,6 +97,10 @@ class CustomUserManager(BaseUserManager):
             **extra_fields
         )
 
+        super_admin_group, _ = Group.objects.get_or_create(name='SuperAdmin')
+        user.groups.add(super_admin_group)
+
+        return user
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
@@ -86,6 +111,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     national_id = models.CharField(max_length=10,unique=True,null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_complex_manager = models.BooleanField(default=False)
 
     groups = models.ManyToManyField('auth.Group',related_name='useraccount_set', blank=True)
     user_permissions = models.ManyToManyField('auth.Permission',related_name='useraccount_set',blank=True)
@@ -106,6 +132,9 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name','last_name','email']
 
     objects = CustomUserManager()
+
+    def is_super_admin(self):
+        return self.groups.filter(name="Super Admin").exists()
 
     def __str__(self):
         return f"{self.name} - {self.last_name}"
