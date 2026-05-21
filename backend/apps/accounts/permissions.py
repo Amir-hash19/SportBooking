@@ -5,7 +5,17 @@ from django.contrib.auth.models import Group
 
 
 class IsSuperAdmin(permissions.BasePermission):
-    
+    """
+    A Custom permission for admins
+
+    check this permission that 
+    is the user is admin or not 
+    and check that the user is in the 
+    group or not 
+
+    return = Boolean
+
+    """
 
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
@@ -42,6 +52,21 @@ class IsRegularUser(permissions.BasePermission):
         
         
        
+class IsProfileComplete(permissions.BasePermission):
+     """
+
+     Docstring for IsProfileComplete
+     This Class check that
+     the user has a completed
+     profile or not 
+
+     using a property method in models    
+    """
+     def has_permission(self, request, view):
+          try:
+               return request.user.profile.is_complete
+          except:
+               return False
 
 
     
