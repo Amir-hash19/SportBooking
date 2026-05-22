@@ -171,3 +171,10 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),  
 
 }
+
+
+
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.SuperAdminGroupBackend',  
+    'django.contrib.auth.backends.ModelBackend', 
+]
