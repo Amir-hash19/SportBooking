@@ -6,5 +6,5 @@ class AccountsConfig(AppConfig):
     name = 'backend.apps.accounts'
     
     def ready(self):
-        import accounts.signals
+        import backend.apps.accounts.signals
         
