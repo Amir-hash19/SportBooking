@@ -185,10 +185,6 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
         'standard': {
             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
         },
@@ -198,34 +194,11 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
         },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/user_signup.log',
-            'maxBytes': 1024 * 1024 * 10,  # 10 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-        'error_file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/errors.log',
-            'maxBytes': 1024 * 1024 * 10,
-            'backupCount': 10,
-            'formatter': 'verbose',
-        },
     },
     'loggers': {
-        '__name__': {  # یا اسم اپ شما مثل 'users.views'
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
         'django': {
             'handlers': ['console'],
             'level': 'INFO',
         },
-    },
-    'root': {
-        'handlers': ['console', 'error_file'],
-        'level': 'ERROR',
     },
 }

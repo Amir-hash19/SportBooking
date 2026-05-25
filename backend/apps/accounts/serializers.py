@@ -4,6 +4,7 @@ from .models import UserAccount, Profile
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
+from django.contrib.auth import authenticate
 import re
 User = get_user_model()
 
@@ -92,3 +93,35 @@ class UserSignupSerializer(serializers.ModelSerializer):
       
         user = User.objects.create_user(**validated_data)
         return user
+
+
+
+
+class LoginSerializer(serializers.ModelSerializer):
+    phone_number = serializers.CharField()
+    password = serializers.CharField(write_only=True, style={"input":"password"})
+
+    def validate(self, data):
+        phone_number = data.get("phone_number")
+        password = data.get("password")
+        try:
+            User.objects.get(phone_number=phone_number)
+
+        except User.DoesNotExist:
+            raise serializers.ValidationError(
+                "user did not find with given phone_number"
+            )    
+        
+        user = authenticate(phone_number=phone_number, password=password)
+        if not user:
+            raise serializers.ValidationError(
+                "phone number or passoword is wrong"
+            )
+        if not user.is_active:
+            raise serializers.ValidationError(
+                "this user is deactivated"
+            )
+        
+        data["user"]=user
+        return data
+    

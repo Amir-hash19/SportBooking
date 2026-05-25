@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Add accounts URLs routing 
-    # path("api/v1/", include('accounts.urls'))
+    path("api/v1/", include('backend.apps.accounts.urls'))
 ]
