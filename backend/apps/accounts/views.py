@@ -94,9 +94,8 @@ class CreateUserAccountView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-    
-
-    
+        
+        
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
@@ -109,7 +108,74 @@ class CreateUserAccountView(APIView):
 
     
 
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = serializers.LoginSerializer(data=request.data)
+        
+       
+        if not serializer.is_valid():
+            logger.warning(f"User Login validation failed: {serializer.errors}")
+            return Response(
+                {
+                    "success": False,
+                    "errors": serializer.errors,
+                    "message": "Login validation failed, data was invalid"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        
+        user = serializer.validated_data["user"]
+        
+       
+        try:
+            refresh = RefreshToken.for_user(user)
+        except TokenError as e:
+            logger.error(f"Token creation failed for user {user.id}: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to create authentication token"
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+      
+        return Response(
+            {
+                "success": True,
+                "message": "Login was successful",
+                "data": {
+                    "access": str(refresh.access_token),
+                    "refresh": str(refresh),
+                    "user": {
+                        "id": user.id,
+                        "email": user.phone_number,
+                        "name": user.name,
+                        "last_name": user.last_name
+                    }
+                }
+            },
+            status=status.HTTP_200_OK
+        )
            
+
+
+               
+                
+
+            
+
+            
+           
+            
+
+           
+
+
+               
 
 
 
