@@ -13,6 +13,30 @@ logger = logging.getLogger(__name__)
 
 
 class CreateUserAccountView(APIView):
+    """
+    Docstring for CreateUserAccountView
+    
+    :args: 
+        name,
+        last_name,
+        phone_number,
+        email,
+        password,
+        password_confirm
+    :kwargs:
+        national_id,
+        is_complex_manager,
+        is_active,
+        is_staff,
+        date_created,
+        updated_at
+
+    :OutPut: 
+            status code 201 created
+            access token and refresh token
+            data = data
+    :success: True | and the message is User account created successfully
+    """
     permission_classes = [AllowAny]
     
     @transaction.atomic
@@ -109,6 +133,25 @@ class CreateUserAccountView(APIView):
     
 
 class LoginView(APIView):
+    """Login API
+
+        permission level is allow any 
+        every body can login 
+        HEADER is empty
+
+        args:
+            1) phone_number as string 
+            2) password as string
+        kwargs:
+            None
+
+        OutPut:
+            status code 200 Ok
+            success: True
+            tokens :
+                refresh token
+                access token        
+    """
     permission_classes = [AllowAny]
     
     def post(self, request):
