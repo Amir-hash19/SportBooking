@@ -49,9 +49,9 @@ INSTALLED_APPS = [
     
     # My apps
     'backend.apps.accounts.apps.AccountsConfig',
-    # 'bookings.apps.BookingsConfig',
-    # 'notifications.apps.NotificationsConfig',
-    # 'venues.apps.VenuesConfig'
+    'backend.apps.bookings.apps.BookingsConfig',
+    'backend.apps.notifications.apps.NotificationsConfig',
+    'backend.apps.venues.apps.VenuesConfig'
 ]
 
 MIDDLEWARE = [
