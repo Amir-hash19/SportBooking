@@ -85,7 +85,7 @@ class CreateUserAccountView(APIView):
                         "message": "User created but failed to generate tokens",
                         "error_code": "TOKEN_GENERATION_FAILED"
                     },
-                    status=status.HTTP_201_CREATED  
+                    status=status.HTTP_401_UNAUTHORIZED
                 )
 
             return Response(
@@ -97,7 +97,7 @@ class CreateUserAccountView(APIView):
                         "name": user.name,
                         "last_name": user.last_name,
                         "email": user.email,
-                        "phone_number": user.phone_number
+                        "phone_number": str(user.phone_number)
                     },
                     "tokens": {
                         "access": str(refresh.access_token),
@@ -194,8 +194,7 @@ class LoginView(APIView):
                     "access": str(refresh.access_token),
                     "refresh": str(refresh),
                     "user": {
-                        "id": user.id,
-                        "email": user.phone_number,
+                        "email": str(user.phone_number),
                         "name": user.name,
                         "last_name": user.last_name
                     }
