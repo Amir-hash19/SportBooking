@@ -32,5 +32,11 @@ urlpatterns = [
         "manager-request/",
         views.SubmitComplexManagerRequestView.as_view(),
         name='submit_manager_request'
-        )
+        ),
+
+    path(
+        "user/list/",
+        views.UserListView.as_view(),
+        name="list_user"
+    )    
 ]

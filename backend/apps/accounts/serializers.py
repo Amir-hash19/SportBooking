@@ -211,3 +211,23 @@ class CreateComplexManagerRequestSerializer(
         return ComplexManagerRequest.objects.create(
             user=self.context["request"].user
         )
+
+
+
+class ProfileUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ["avatar","birth_date","address"
+        ,"gender","second_number","sport_fame",
+        "medical_fame","updated_at"
+        ]
+
+
+class ListUserSerializer(serializers.ModelSerializer):
+    profile = ProfileUserSerializer()
+
+    class Meta:
+        model = UserAccount
+        fields = ["name", "last_name", "phone_number",
+        "email", "date_created", "profile"
+        ]
