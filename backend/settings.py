@@ -175,7 +175,7 @@ SIMPLE_JWT = {
 
 
 AUTHENTICATION_BACKENDS = [
-    'backend.apps.accounts.backends.SuperAdminGroupBackend',  
+    # 'backend.apps.accounts.backends.SuperAdminGroupBackend',  
     'django.contrib.auth.backends.ModelBackend', 
 ]
 

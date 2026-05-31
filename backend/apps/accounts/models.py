@@ -119,6 +119,12 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     date_created = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+    def save(self, *args, **kwargs):
+        self.is_staff = self.is_superuser or self.is_complex_manager
+        super().save(*args, **kwargs)
+
+
     class Meta:
         indexes = [
             models.Index(fields=['last_name', 'name']),  
