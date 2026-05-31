@@ -16,6 +16,8 @@ from .filters import UserFilter
 from rest_framework.exceptions import NotFound
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from .paginations import UserPagination
+from .throttles import UserListThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -273,12 +275,27 @@ class SubmitComplexManagerRequestView(APIView):
 class UserListView(ListAPIView):
     permission_classes = [IsSuperAdmin]
     serializer_class = serializers.ListUserSerializer
+    pagination_class = UserPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["phone_number", "email"]
     filterset_class = UserFilter
+    throttle_classes = [UserListThrottle]
 
     def get_queryset(self):
-        return UserAccount.objects.select_related("profile").all()
+        return UserAccount.objects.select_related("profile").only(
+            "name",
+            "last_name",
+            "email",
+            "phone_number",
+            "national_id",
+            "is_complex_manager",
+            "is_staff",
+            "date_created",
+            "profile__avatar",
+            "profile__address",
+            "profile__gender",
+            "profile__second_number"
+        )
 
               
 

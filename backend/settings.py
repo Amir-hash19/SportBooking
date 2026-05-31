@@ -166,7 +166,9 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
-    ]
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "user_list": "30/minute",}
 }
 
 
