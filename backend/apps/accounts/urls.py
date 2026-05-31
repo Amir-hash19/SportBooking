@@ -26,5 +26,23 @@ urlpatterns = [
         "users/super-admin/promotions/",
         views.CreateAdminUserView.as_view(),
         name="user_promotion"
-    )
+    ),
+
+    path(
+        "manager-request/",
+        views.SubmitComplexManagerRequestView.as_view(),
+        name='submit_manager_request'
+        ),
+
+    path(
+        "user/list/",
+        views.UserListView.as_view(),
+        name="list_user"
+    ),
+
+    path(
+        "user/me/",
+        views.DetailUserAccount.as_view(),
+        name="get_user"
+    )    
 ]

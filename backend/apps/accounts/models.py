@@ -194,3 +194,54 @@ class Profile(models.Model):
 
 
 
+class ComplexManagerRequest(models.Model):
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+
+    user = models.OneToOneField(
+        to=UserAccount,
+        on_delete=models.CASCADE,
+        related_name="manager_request"
+    )    
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+
+    review_note = models.TextField(
+        blank=True, null=True
+    )
+
+    reviewed_by = models.ForeignKey(
+        to=UserAccount,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="reviewed_manager_requests"
+    )
+
+    reviewed_at = models.DateTimeField(
+        null=True, blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        db_table = 'complexmanagerrequest'
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["status"])
+        ]
+
+    def __str__(self):
+        return f"{self.user.phone_number} - {self.status}"
