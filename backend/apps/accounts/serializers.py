@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.contrib.auth import authenticate
 from backend.apps.accounts.models import UserAccount
+from django.db import transaction
 import re
 User = get_user_model()
 
@@ -49,16 +50,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
         
         return value
     
-    def validate_email(self, value):
-        
-        value = value.lower().strip()
-        if User.objects.filter(email__iexact=value).exists():
-            raise serializers.ValidationError("A user with this email already exists")
-        
-        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', value):
-            raise serializers.ValidationError("Enter a valid email address")
-        
-        return value
+
     
     def validate_name(self, value):
        
@@ -66,12 +58,14 @@ class UserSignupSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Name must be at least 2 characters")
         return value.strip()
     
+
     def validate_last_name(self, value):
        
         if len(value.strip()) < 2:
             raise serializers.ValidationError("Last name must be at least 2 characters")
         return value.strip()
     
+
     def validate(self, attrs):
         
         password = attrs.get("password")
@@ -82,25 +76,18 @@ class UserSignupSerializer(serializers.ModelSerializer):
         
         return attrs
     
+
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data["phone_number"] = str(instance.phone_number) 
         return data
     
-
+    @transaction.atomic
     def create(self, validated_data):
        
-        validated_data.pop("confirm_password")
-        
-        
-        validated_data['name'] = validated_data.get('name', '').strip()
-        validated_data['last_name'] = validated_data.get('last_name', '').strip()
-        validated_data['email'] = validated_data.get('email', '').lower().strip()
-        
-      
+        validated_data.pop("confirm_password")      
         user = User.objects.create_user(**validated_data)
         return user
-
 
 
 

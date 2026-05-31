@@ -2,18 +2,21 @@ from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from .models import UserAccount, Profile
 
-
+SUPER_ADMIN_GROUP = "SuperAdmin"
 
 
 @receiver(m2m_changed, sender=UserAccount.groups.through)
 def sync_superuser_status(sender, instance, action, **kwargs):
-    if action in ['post_add', 'post_remove']:
-        is_super_admin = instance.groups.filter(name="SuperAdmin").exists()
-        
-        if instance.is_superuser != is_super_admin:
-            instance.is_superuser = is_super_admin
-            instance.is_staff = is_super_admin or instance.is_complex_manager
-            instance.save(update_fields=['is_superuser', 'is_staff'])
+    if action not in ['post_add', 'post_remove', "post_clear"]:
+        return 
+    
+    is_super_admin = instance.groups.filter(
+        name=SUPER_ADMIN_GROUP
+        ).exists()
+    
+    if instance.is_superuser != is_super_admin:
+        instance.is_superuser = is_super_admin
+        instance.save(update_fields=['is_superuser'])
 
             
 
