@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.contrib.auth import authenticate
-from backend.apps.accounts.models import UserAccount
+from backend.apps.accounts.models import UserAccount, ComplexManagerRequest
 from django.db import transaction
 from django.contrib.auth.models import Group
 from phonenumber_field.serializerfields import PhoneNumberField
@@ -180,3 +180,34 @@ class AddAdminUserSerializer(serializers.Serializer):
         return user
 
     
+
+
+class CreateComplexManagerRequestSerializer(
+    serializers.ModelSerializer
+):
+    class Meta:
+        model = ComplexManagerRequest
+        fields = []
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+
+        if user.is_complex_manager:
+            raise serializers.ValidationError(
+                "You are already a complex manager"
+            )      
+        
+        if ComplexManagerRequest.objects.filter(
+            user=user,
+            status=ComplexManagerRequest.Status.PENDING
+        ).exists():
+            raise serializers.ValidationError(
+                "You already have a pending request"
+            )
+
+        return attrs
+    
+    def create(self, validated_data):
+        return ComplexManagerRequest.objects.create(
+            user=self.context["request"].user
+        )

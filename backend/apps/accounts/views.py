@@ -1,7 +1,7 @@
 import logging
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -234,10 +234,34 @@ class CreateAdminUserView(APIView):
 
         },status=status.HTTP_200_OK)
 
+
+
+class SubmitComplexManagerRequestView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.CreateComplexManagerRequestSerializer
+
+    
+    def post(self, request):
+        serializer = self.serializer_class(
+            data=request.data,
+            context={"request": request}
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        manager_request = serializer.save()
+
+        return Response({
+            "message":"Your request has been submitted",
+            "request_id": manager_request.id,
+            "status": manager_request.status
+        }, status=status.HTTP_201_CREATED
+    )
             
 
             
            
+
             
 
            
