@@ -1,6 +1,6 @@
 import logging
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework import status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -13,7 +13,7 @@ from .models import UserAccount, Profile, ComplexManagerRequest
 from django_filters.rest_framework import DjangoFilterBackend
 from .permissions import IsSuperAdmin, IsComplexManager, IsProfileComplete
 from .filters import UserFilter
-
+from rest_framework.exceptions import NotFound
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
@@ -284,6 +284,17 @@ class UserListView(ListAPIView):
 
            
 
+class DetailUserAccount(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.ListUserSerializer
+
+    def get_object(self):
+        return UserAccount.objects.select_related("profile").get(pk=self.request.user.pk)
+        
+
+        
+       
+        
 
                
 

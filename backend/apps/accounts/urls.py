@@ -38,5 +38,11 @@ urlpatterns = [
         "user/list/",
         views.UserListView.as_view(),
         name="list_user"
+    ),
+
+    path(
+        "user/me/",
+        views.DetailUserAccount.as_view(),
+        name="get_user"
     )    
 ]

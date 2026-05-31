@@ -231,3 +231,6 @@ class ListUserSerializer(serializers.ModelSerializer):
         fields = ["name", "last_name", "phone_number",
         "email", "date_created", "profile"
         ]
+
+
+
