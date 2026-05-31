@@ -39,7 +39,7 @@ class CreateUserAccountView(APIView):
     """
     permission_classes = [AllowAny]
     
-    @transaction.atomic
+    
     def post(self, request):
         logger.info(f"User signup attempt from IP: {self.get_client_ip(request)}")
         
