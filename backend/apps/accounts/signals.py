@@ -16,7 +16,7 @@ def sync_superuser_status(sender, instance, action, **kwargs):
     
     if instance.is_superuser != is_super_admin:
         instance.is_superuser = is_super_admin
-        instance.save(update_fields=['is_superuser'])
+        instance.save()
 
             
 

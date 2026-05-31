@@ -7,6 +7,7 @@ from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from . import serializers
+from .permissions import IsSuperAdmin, IsComplexManager, IsProfileComplete
 
 logger = logging.getLogger(__name__)
 
@@ -207,6 +208,31 @@ class LoginView(APIView):
 
                
                 
+class CreateAdminUserView(APIView):
+    """
+        Promote an existing user to the SuperAdmin role.
+        Accessible only by users with SuperAdmin privileges.
+    """
+    
+    permission_classes = [IsSuperAdmin]
+    serializer_class = serializers.AddAdminUserSerializer
+
+    
+    def post(self, request):
+        serializer = self.serializer_class(
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.save()
+
+        return Response({
+            "message":"User Promoted to SuperAdmin",
+            "user_email":user.email,
+            "phone_number":str(user.phone_number)
+
+        },status=status.HTTP_200_OK)
 
             
 

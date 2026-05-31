@@ -7,10 +7,14 @@ from django.core.validators import RegexValidator
 from django.contrib.auth import authenticate
 from backend.apps.accounts.models import UserAccount
 from django.db import transaction
+from django.contrib.auth.models import Group
+from phonenumber_field.serializerfields import PhoneNumberField
 import re
+
+
 User = get_user_model()
 
-
+SUPER_ADMIN_GROUP = "SuperAdmin"
 
 class UserSignupSerializer(serializers.ModelSerializer):
    
@@ -126,4 +130,53 @@ class LoginSerializer(serializers.ModelSerializer):
         
         data["user"]=user
         return data
+    
+
+
+
+
+
+class AddAdminUserSerializer(serializers.Serializer):
+    """
+
+    Validate a user by phone number and promote them to SuperAdmin.
+    Adds the user to the SuperAdmin group upon successful validation.
+
+    """
+    phone_number = PhoneNumberField()
+
+    def validate_phone_number(self, value):
+        try:
+            user = UserAccount.objects.get(
+                phone_number=value
+            )
+        except UserAccount.DoesNotExist:
+            raise serializers.ValidationError(
+                "User not found."
+            )
+
+        if user.groups.filter(
+            name=SUPER_ADMIN_GROUP
+        ).exists():
+            raise serializers.ValidationError(
+                "User is already a SuperAdmin."
+            )
+
+        return user
+
+    def create(self, validated_data):
+        """
+            Add the validated user to the SuperAdmin group.
+            Returns the updated user instance.
+        """
+        user = validated_data["phone_number"]
+
+        group = Group.objects.get(
+            name=SUPER_ADMIN_GROUP
+        )
+
+        user.groups.add(group)
+
+        return user
+
     
