@@ -1,21 +1,24 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+    BaseUserManager,
+)
 from django.contrib.auth.models import Group
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth import get_user_model
 from django.db import models
 
 
-
-
 class CustomUserManager(BaseUserManager):
-    def create_user(self, name, last_name, phone_number, password, email=None, **extra_fields):
-
+    def create_user(
+        self, name, last_name, phone_number, password, email=None, **extra_fields
+    ):
         """
         this method create user account with given args and kwargs
-        
+
         :self: inherited from BaseUserManager
         :name: user must set name for itself which is an charfield
-        :last_name: user must set last_name for itself 
+        :last_name: user must set last_name for itself
         :phone_number: using third_party package for validating phone number field
         :password: password will be hashed before saving in data base
         :email: email will be controled by Email field of Django and this is optioanl one
@@ -25,33 +28,34 @@ class CustomUserManager(BaseUserManager):
 
         if not phone_number:
             raise ValueError("phone number is required")
-        
+
         if not name and not last_name:
-            raise ValueError("Enter Name and lastname please!")    
-        
+            raise ValueError("Enter Name and lastname please!")
+
         if not password:
             raise ValueError("Password is required")
-        
-        extra_fields.setdefault('is_staff', False)
-        extra_fields.setdefault('is_superuser', False)
-        extra_fields.setdefault('is_complex_manager', False)
-        
-       
+
+        extra_fields.setdefault("is_staff", False)
+        extra_fields.setdefault("is_superuser", False)
+        extra_fields.setdefault("is_complex_manager", False)
+
         user = self.model(
             name=name,
             last_name=last_name,
             phone_number=phone_number,
             email=self.normalize_email(email) if email else None,
-            **extra_fields
+            **extra_fields,
         )
         user.set_password(password)
         user.save(using=self._db)
 
         return user
-    
-    def create_complex_manager(self, phone_number, name, last_name, email, password, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_complex_manager', True)
+
+    def create_complex_manager(
+        self, phone_number, name, last_name, email, password, **extra_fields
+    ):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_complex_manager", True)
 
         user = self.create_user(
             phone_number=phone_number,
@@ -59,45 +63,43 @@ class CustomUserManager(BaseUserManager):
             last_name=last_name,
             email=email,
             password=password,
-            **extra_fields
+            **extra_fields,
         )
 
         return user
 
-
-
-    def create_superuser(self, name, last_name, phone_number, email, password, **extra_fields):
-        '''
+    def create_superuser(
+        self, name, last_name, phone_number, email, password, **extra_fields
+    ):
+        """
         Docstring for create_superuser
-        
+
         last Docstring completed this one
         is superuser creator the fields like
-        is_superuser, is_active and is_staff 
+        is_superuser, is_active and is_staff
         will be set automatically
 
-        '''
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        
-        
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+        """
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
         if not password:
             raise ValueError("Superuser must have a password")
-        
-       
+
         user = self.create_user(
             name=name,
             last_name=last_name,
             phone_number=phone_number,
             email=email,
             password=password,
-            **extra_fields
+            **extra_fields,
         )
 
-        super_admin_group, _ = Group.objects.get_or_create(name='SuperAdmin')
+        super_admin_group, _ = Group.objects.get_or_create(name="SuperAdmin")
         user.groups.add(super_admin_group)
 
         return user
@@ -108,34 +110,34 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=150)
     phone_number = PhoneNumberField(unique=True)
     email = models.EmailField(unique=True, null=True, blank=True)
-    national_id = models.CharField(max_length=10,unique=True,null=True, blank=True)
+    national_id = models.CharField(max_length=10, unique=True, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_complex_manager = models.BooleanField(default=False)
 
-    groups = models.ManyToManyField('auth.Group',related_name='useraccount_set', blank=True)
-    user_permissions = models.ManyToManyField('auth.Permission',related_name='useraccount_set',blank=True)
+    groups = models.ManyToManyField(
+        "auth.Group", related_name="useraccount_set", blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        "auth.Permission", related_name="useraccount_set", blank=True
+    )
 
     date_created = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
     def save(self, *args, **kwargs):
         self.is_staff = self.is_superuser or self.is_complex_manager
         super().save(*args, **kwargs)
 
-
     class Meta:
         indexes = [
-            models.Index(fields=['last_name', 'name']),  
-            models.Index(fields=['email']),
+            models.Index(fields=["last_name", "name"]),
+            models.Index(fields=["email"]),
         ]
-        ordering = ['-date_created']
-      
+        ordering = ["-date_created"]
 
-    
     USERNAME_FIELD = "phone_number"
-    REQUIRED_FIELDS = ['name','last_name','email']
+    REQUIRED_FIELDS = ["name", "last_name", "email"]
 
     objects = CustomUserManager()
 
@@ -146,31 +148,27 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         return f"{self.name} - {self.last_name}"
 
 
-
-
 class Profile(models.Model):
     """
     Docstring for Profile Model
 
-    every user can have one profile and 
-    each profile is belongs to each user 
-    most of the fields are OPTIONAL and 
+    every user can have one profile and
+    each profile is belongs to each user
+    most of the fields are OPTIONAL and
     for futher informations
 
-    Note: after creating user account by user 
-          the profile record will be created 
+    Note: after creating user account by user
+          the profile record will be created
           simultaneously users can not create
-          profile  
+          profile
     """
+
     user = models.OneToOneField(to=UserAccount, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='media', null=True, blank=True)
+    avatar = models.ImageField(upload_to="media", null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     address = models.TextField(null=True, blank=True)
 
-    GENDER_TYPE=(
-        ("1", "MALE"),
-        ("2", "FEMALE")
-    )
+    GENDER_TYPE = (("1", "MALE"), ("2", "FEMALE"))
 
     gender = models.CharField(max_length=10, choices=GENDER_TYPE)
     second_number = PhoneNumberField(unique=True, null=True, blank=True)
@@ -178,20 +176,14 @@ class Profile(models.Model):
     medical_fame = models.TextField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
     @property
     def is_complete(self):
         return bool(
-            self.birth_date and 
-            self.gender and 
-            self.second_number and 
-            self.address 
+            self.birth_date and self.gender and self.second_number and self.address
         )
-
 
     def __str__(self):
         return f"{self.user.name} {self.gender}"
-
 
 
 class ComplexManagerRequest(models.Model):
@@ -202,46 +194,33 @@ class ComplexManagerRequest(models.Model):
         REJECTED = "rejected", "Rejected"
 
     user = models.OneToOneField(
-        to=UserAccount,
-        on_delete=models.CASCADE,
-        related_name="manager_request"
-    )    
+        to=UserAccount, on_delete=models.CASCADE, related_name="manager_request"
+    )
 
     status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.PENDING
+        max_length=20, choices=Status.choices, default=Status.PENDING
     )
 
-    review_note = models.TextField(
-        blank=True, null=True
-    )
+    review_note = models.TextField(blank=True, null=True)
 
     reviewed_by = models.ForeignKey(
         to=UserAccount,
         on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name="reviewed_manager_requests"
+        null=True,
+        blank=True,
+        related_name="reviewed_manager_requests",
     )
 
-    reviewed_at = models.DateTimeField(
-        null=True, blank=True
-    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
 
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    updated_at = models.DateTimeField(
-        auto_now=True
-    )
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'complexmanagerrequest'
+        db_table = "complexmanagerrequest"
         ordering = ["-created_at"]
-        indexes = [
-            models.Index(fields=["status"])
-        ]
+        indexes = [models.Index(fields=["status"])]
 
     def __str__(self):
         return f"{self.user.phone_number} - {self.status}"

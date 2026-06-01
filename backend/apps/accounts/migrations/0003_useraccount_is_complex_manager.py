@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0002_remove_useraccount_accepted_role_and_more'),
+        ("accounts", "0002_remove_useraccount_accepted_role_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='useraccount',
-            name='is_complex_manager',
+            model_name="useraccount",
+            name="is_complex_manager",
             field=models.BooleanField(default=False),
         ),
     ]
