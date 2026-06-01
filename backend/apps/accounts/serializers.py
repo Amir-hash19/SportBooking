@@ -165,7 +165,6 @@ class AddAdminUserSerializer(serializers.Serializer):
         return user
 
 
-
 class CreateComplexManagerRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComplexManagerRequest
@@ -236,7 +235,6 @@ class ListUserSerializer(serializers.ModelSerializer):
         return instance
 
 
-
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True, min_length=8)
@@ -268,4 +266,4 @@ class RemoveAdminUserSerializer(serializers.Serializer):
 
         user.groups.remove(group)
 
-        return user    
+        return user

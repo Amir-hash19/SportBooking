@@ -262,7 +262,11 @@ class UserListView(ListAPIView):
     serializer_class = serializers.ListUserSerializer
 
     throttle_classes = [UserListThrottle]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
 
     pagination_class = UserPagination
     filter_backends = [
@@ -291,7 +295,6 @@ class UserListView(ListAPIView):
         )
 
 
-
 class DetailUserAccount(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     throttle_classes = [UserListThrottle]
@@ -303,8 +306,6 @@ class DetailUserAccount(RetrieveAPIView):
         )
 
 
-
-
 class EditUserProfileView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     throttle_classes = [UserListThrottle]
@@ -313,7 +314,7 @@ class EditUserProfileView(UpdateAPIView):
     def get_object(self):
         return self.request.user
 
- 
+
 class LogOutView(APIView):
     permission_classes = [IsAuthenticated]
 
