@@ -14,6 +14,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .permissions import IsSuperAdmin, IsComplexManager, IsProfileComplete
 from .filters import UserFilter
 from rest_framework.exceptions import NotFound
+from .throttles import UserListThrottle
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
@@ -273,6 +274,7 @@ class SubmitComplexManagerRequestView(APIView):
 class UserListView(ListAPIView):
     permission_classes = [IsSuperAdmin]
     serializer_class = serializers.ListUserSerializer
+    throttle_classes = [UserListThrottle]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["phone_number", "email"]
     filterset_class = UserFilter
@@ -286,6 +288,7 @@ class UserListView(ListAPIView):
 
 class DetailUserAccount(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
+    throttle_classes = [UserListThrottle]
     serializer_class = serializers.ListUserSerializer
 
     def get_object(self):
@@ -294,6 +297,14 @@ class DetailUserAccount(RetrieveAPIView):
 
         
        
+
+class EditUserProfileView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [UserListThrottle]
+    serializer_class = serializers.ListUserSerializer
+
+    def get_object(self):
+        return self.request.user
         
 
  
