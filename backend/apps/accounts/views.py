@@ -1,27 +1,26 @@
 import logging
-from rest_framework.views import APIView
+
+from django.db import IntegrityError
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status
 from rest_framework.generics import (
+    CreateAPIView,
     ListAPIView,
     RetrieveAPIView,
     UpdateAPIView,
-    CreateAPIView,
 )
-from rest_framework import status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from django.db import transaction, IntegrityError
-from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+
 from . import serializers
-import django_filters
-from .models import UserAccount, Profile, ComplexManagerRequest
-from django_filters.rest_framework import DjangoFilterBackend
-from .permissions import IsSuperAdmin, IsComplexManager, IsProfileComplete
 from .filters import UserFilter
-from rest_framework.exceptions import NotFound
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
+from .models import UserAccount
 from .paginations import UserPagination
+from .permissions import IsSuperAdmin
 from .throttles import UserListThrottle
 
 logger = logging.getLogger(__name__)

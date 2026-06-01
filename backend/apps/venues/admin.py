@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Pitch, Image, WorkingHours, Venue
+
+from .models import Image, Pitch, Venue, WorkingHours
 
 admin.site.register(Pitch)
 admin.site.register(Image)

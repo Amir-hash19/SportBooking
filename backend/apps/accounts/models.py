@@ -1,12 +1,11 @@
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    PermissionsMixin,
     BaseUserManager,
+    Group,
+    PermissionsMixin,
 )
-from django.contrib.auth.models import Group
-from phonenumber_field.modelfields import PhoneNumberField
-from django.contrib.auth import get_user_model
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class CustomUserManager(BaseUserManager):
