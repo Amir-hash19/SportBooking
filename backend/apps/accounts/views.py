@@ -1,6 +1,6 @@
 import logging
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework import status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -304,6 +304,7 @@ class UserListView(ListAPIView):
 class DetailUserAccount(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.ListUserSerializer
+    throttle_classes = [UserListThrottle]
 
     def get_object(self):
         return UserAccount.objects.select_related("profile").get(pk=self.request.user.pk)
@@ -312,8 +313,17 @@ class DetailUserAccount(RetrieveAPIView):
         
        
         
+class EditUserProfileView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.ListUserSerializer
+    throttle_classes = [UserListThrottle]
 
-               
+    def get_object(self):
+        return self.request.user
+    
+
+
+ 
 
 
 

@@ -44,5 +44,11 @@ urlpatterns = [
         "user/me/",
         views.DetailUserAccount.as_view(),
         name="get_user"
+    ),
+
+    path(
+        "user/update/",
+        views.EditUserProfileView.as_view(),
+        name="update_user"
     )    
 ]

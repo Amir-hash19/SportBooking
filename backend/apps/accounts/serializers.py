@@ -222,15 +222,35 @@ class ProfileUserSerializer(serializers.ModelSerializer):
         "medical_fame","updated_at"
         ]
 
-
+        
 class ListUserSerializer(serializers.ModelSerializer):
-    profile = ProfileUserSerializer()
+    profile = ProfileUserSerializer(required=False)
 
     class Meta:
         model = UserAccount
         fields = ["name", "last_name", "phone_number",
         "email", "date_created", "profile"
         ]
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop("profile", None)
+
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+
+        if profile_data:
+            profile = instance.profile
+
+            for attr, value in profile_data.items():
+                setattr(profile, attr, value)
+
+            profile.save()
+
+
+        return instance                
 
 
 
