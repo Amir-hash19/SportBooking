@@ -11,54 +11,120 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
+        ("auth", "0012_alter_user_first_name_max_length"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='UserAccount',
+            name="UserAccount",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('name', models.CharField(max_length=150)),
-                ('last_name', models.CharField(max_length=150)),
-                ('phone_number', phonenumber_field.modelfields.PhoneNumberField(max_length=128, region=None, unique=True)),
-                ('email', models.EmailField(blank=True, max_length=254, null=True, unique=True)),
-                ('accepted_role', models.BooleanField(default=False)),
-                ('is_active', models.BooleanField(default=True)),
-                ('is_staff', models.BooleanField(default=False)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('groups', models.ManyToManyField(blank=True, related_name='useraccount_set', to='auth.group')),
-                ('user_permissions', models.ManyToManyField(blank=True, related_name='useraccount_set', to='auth.permission')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                ("name", models.CharField(max_length=150)),
+                ("last_name", models.CharField(max_length=150)),
+                (
+                    "phone_number",
+                    phonenumber_field.modelfields.PhoneNumberField(
+                        max_length=128, region=None, unique=True
+                    ),
+                ),
+                (
+                    "email",
+                    models.EmailField(
+                        blank=True, max_length=254, null=True, unique=True
+                    ),
+                ),
+                ("accepted_role", models.BooleanField(default=False)),
+                ("is_active", models.BooleanField(default=True)),
+                ("is_staff", models.BooleanField(default=False)),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "groups",
+                    models.ManyToManyField(
+                        blank=True, related_name="useraccount_set", to="auth.group"
+                    ),
+                ),
+                (
+                    "user_permissions",
+                    models.ManyToManyField(
+                        blank=True, related_name="useraccount_set", to="auth.permission"
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-date_created'],
+                "ordering": ["-date_created"],
             },
         ),
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('avatar', models.ImageField(blank=True, null=True, upload_to='media')),
-                ('birth_date', models.DateField(blank=True, null=True)),
-                ('address', models.TextField(blank=True, null=True)),
-                ('gender', models.CharField(choices=[('1', 'MALE'), ('2', 'FEMALE')], max_length=10)),
-                ('second_number', phonenumber_field.modelfields.PhoneNumberField(blank=True, max_length=128, null=True, region=None, unique=True)),
-                ('sport_fame', models.TextField(blank=True, null=True)),
-                ('medical_fame', models.TextField(blank=True, null=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("avatar", models.ImageField(blank=True, null=True, upload_to="media")),
+                ("birth_date", models.DateField(blank=True, null=True)),
+                ("address", models.TextField(blank=True, null=True)),
+                (
+                    "gender",
+                    models.CharField(
+                        choices=[("1", "MALE"), ("2", "FEMALE")], max_length=10
+                    ),
+                ),
+                (
+                    "second_number",
+                    phonenumber_field.modelfields.PhoneNumberField(
+                        blank=True, max_length=128, null=True, region=None, unique=True
+                    ),
+                ),
+                ("sport_fame", models.TextField(blank=True, null=True)),
+                ("medical_fame", models.TextField(blank=True, null=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddIndex(
-            model_name='useraccount',
-            index=models.Index(fields=['last_name', 'name'], name='accounts_us_last_na_9bebe9_idx'),
+            model_name="useraccount",
+            index=models.Index(
+                fields=["last_name", "name"], name="accounts_us_last_na_9bebe9_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='useraccount',
-            index=models.Index(fields=['email'], name='accounts_us_email_9b1294_idx'),
+            model_name="useraccount",
+            index=models.Index(fields=["email"], name="accounts_us_email_9b1294_idx"),
         ),
     ]

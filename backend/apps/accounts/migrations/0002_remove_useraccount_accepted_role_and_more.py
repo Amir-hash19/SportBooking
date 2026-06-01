@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0001_initial'),
+        ("accounts", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='useraccount',
-            name='accepted_role',
+            model_name="useraccount",
+            name="accepted_role",
         ),
         migrations.AddField(
-            model_name='useraccount',
-            name='national_id',
+            model_name="useraccount",
+            name="national_id",
             field=models.CharField(blank=True, max_length=10, null=True, unique=True),
         ),
     ]

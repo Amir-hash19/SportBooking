@@ -34,5 +34,9 @@ phonenumbers==9.0.30
 
 
 # # Code Documentation tools
-# drf-yasg==1.21.8
-# drf-spectacular[sidecar]==0.28.0 
+drf-yasg==1.21.8
+drf-spectacular[sidecar]==0.28.0 
+
+#code reformater
+black==25.1.0
+ruff==0.12.0
