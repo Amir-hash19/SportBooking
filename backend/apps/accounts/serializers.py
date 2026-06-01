@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 from backend.apps.accounts.models import UserAccount
 from backend.apps.accounts.models import UserAccount, ComplexManagerRequest
 from django.db import transaction
+from .signals import SUPER_ADMIN_GROUP
 from django.contrib.auth.models import Group
 from phonenumber_field.serializerfields import PhoneNumberField
 import re
@@ -253,4 +254,53 @@ class ListUserSerializer(serializers.ModelSerializer):
 
         return instance                
 
+
+
+
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True, min_length=8)
+    confirm_password = serializers.CharField(required=True)
+
+
+    def validate(self, data):
+        if data["new_password"] != data["confirm_password"]:
+            raise serializers.ValidationError("Passwords don't match")
+        return data
+    
+
+        
+
+class RemoveAdminUserSerializer(serializers.Serializer):
+    phone_number = PhoneNumberField()
+
+    def validate_phone_number(self, value):
+        try:
+            user = UserAccount.objects.get(
+                phone_number=value
+            )        
+        except UserAccount.DoesNotExist:
+            raise serializers.ValidationError(
+                "User not found"
+            )    
+        
+        if not user.groups.filter(
+            name=SUPER_ADMIN_GROUP
+        ).exists():
+            raise serializers.ValidationError(
+                "User is Not SuperAdmin."
+            )
+        return user
+    
+    def save(self, **kwargs):
+        user = self.validated_data["phone_number"]
+
+        group = Group.objects.get(
+            name=SUPER_ADMIN_GROUP
+        )
+
+        user.groups.remove(group)
+        return user    
 
