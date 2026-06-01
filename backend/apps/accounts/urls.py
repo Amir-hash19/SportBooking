@@ -50,5 +50,23 @@ urlpatterns = [
         "user/update/",
         views.EditUserProfileView.as_view(),
         name="update_user"
-    )    
+    ),
+
+    path(
+        "user/logout/",
+        views.LogOutView.as_view(), 
+        name="logout_user"
+    ),
+
+    path(
+        "user/password/change/",
+        views.ChangePasswordView.as_view(),
+        name="user_change_password"
+    ),
+    path(
+        "admin/remove-user/",
+        views.RemoveAdminUserView.as_view(),
+        name="remove_user_admin"
+    ),     
+
 ]

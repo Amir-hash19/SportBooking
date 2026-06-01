@@ -1,6 +1,6 @@
 import logging
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, CreateAPIView
 from rest_framework import status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -323,7 +323,81 @@ class EditUserProfileView(UpdateAPIView):
     
 
 
- 
 
 
 
+class LogOutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+            if not refresh_token:
+                return Response({
+                    "detail":"Refresh token required"
+                },status=status.HTTP_400_BAD_REQUEST)
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message":"User Logout was Successful"}
+            ,status=status.HTTP_205_RESET_CONTENT
+        )
+        except TokenError:
+            return Response({
+                "detail":"Invalid Token"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [UserListThrottle]
+    serializer_class = serializers.ChangePasswordSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            user = request.user
+
+            if not user.check_password(serializer.validated_data["old_password"]):
+                return Response(
+                    {"detail": "Old password is incorrect"},
+                    status=status.HTTP_409_CONFLICT
+                )
+
+            user.set_password(serializer.validated_data["new_password"])
+            user.save()
+
+            return Response(
+                {"detail": "Password changed successfully"},
+                status=status.HTTP_200_OK
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+  
+            
+
+class RemoveAdminUserView(CreateAPIView):
+    permission_classes = [IsSuperAdmin]
+    throttle_classes = [UserListThrottle]
+    
+    serializer_class = serializers.RemoveAdminUserSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.save()
+
+        return Response({
+            "message":"User removed from SuperAdmin group successfully.",
+            "phone_number": str(user.phone_number),
+        },status=status.HTTP_200_OK
+    )
