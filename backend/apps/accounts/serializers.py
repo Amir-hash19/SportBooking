@@ -1,17 +1,21 @@
-from rest_framework import serializers
-from django.contrib.auth.hashers import make_password
-from .models import UserAccount, Profile
-from django.contrib.auth.password_validation import validate_password
-from django.contrib.auth import get_user_model
+import re
+
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.models import Group
 from django.core.validators import RegexValidator
+
 from django.contrib.auth import authenticate
 from backend.apps.accounts.models import UserAccount
 from backend.apps.accounts.models import UserAccount, ComplexManagerRequest
+
 from django.db import transaction
-from .signals import SUPER_ADMIN_GROUP
-from django.contrib.auth.models import Group
 from phonenumber_field.serializerfields import PhoneNumberField
-import re
+from rest_framework import serializers
+
+from backend.apps.accounts.models import ComplexManagerRequest, UserAccount
+
+from .models import Profile, UserAccount
+from .signals import SUPER_ADMIN_GROUP
 
 User = get_user_model()
 
@@ -164,10 +168,7 @@ class AddAdminUserSerializer(serializers.Serializer):
 
         return user
 
-<<<<<<< HEAD
 
-=======
->>>>>>> develop
 
 class CreateComplexManagerRequestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -270,9 +271,8 @@ class RemoveAdminUserSerializer(serializers.Serializer):
         group = Group.objects.get(name=SUPER_ADMIN_GROUP)
 
         user.groups.remove(group)
-<<<<<<< HEAD
         return user    
 
-=======
-        return user
->>>>>>> develop
+
+       
+

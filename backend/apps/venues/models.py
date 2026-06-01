@@ -1,7 +1,7 @@
-from django.db import models
-from backend.apps.accounts.models import UserAccount, Profile
-from django.core.validators import MinValueValidator, MinLengthValidator
 from django.core.exceptions import ValidationError
+from django.db import models
+
+from backend.apps.accounts.models import UserAccount
 
 
 class Venue(models.Model):

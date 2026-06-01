@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import UserAccount, Profile, ComplexManagerRequest
+
+from .models import ComplexManagerRequest, Profile, UserAccount
 
 admin.site.register(UserAccount)
 admin.site.register(Profile)

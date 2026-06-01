@@ -1,27 +1,31 @@
 import logging
-from rest_framework.views import APIView
+
+from django.db import IntegrityError
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status
 from rest_framework.generics import (
+    CreateAPIView,
     ListAPIView,
     RetrieveAPIView,
     UpdateAPIView,
-    CreateAPIView,
 )
-from rest_framework import status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from django.db import transaction, IntegrityError
-from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+
 from . import serializers
-import django_filters
-from .models import UserAccount, Profile, ComplexManagerRequest
-from django_filters.rest_framework import DjangoFilterBackend
-from .permissions import IsSuperAdmin, IsComplexManager, IsProfileComplete
 from .filters import UserFilter
 from rest_framework.exceptions import NotFound
 from .throttles import UserListThrottle
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from .models import UserAccount
+from .paginations import UserPagination
+from .permissions import IsSuperAdmin
+from .throttles import UserListThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -259,24 +263,19 @@ class SubmitComplexManagerRequestView(APIView):
 class UserListView(ListAPIView):
     permission_classes = [IsSuperAdmin]
     serializer_class = serializers.ListUserSerializer
-<<<<<<< HEAD
     throttle_classes = [UserListThrottle]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-=======
     pagination_class = UserPagination
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
         filters.OrderingFilter,
     ]
->>>>>>> develop
     search_fields = ["phone_number", "email"]
     filterset_class = UserFilter
 
     def get_queryset(self):
-<<<<<<< HEAD
-        return UserAccount.objects.select_related("profile").all()
-=======
+
         return UserAccount.objects.select_related("profile").only(
             "name",
             "last_name",
@@ -291,7 +290,6 @@ class UserListView(ListAPIView):
             "profile__gender",
             "profile__second_number",
         )
->>>>>>> develop
 
 
 class DetailUserAccount(RetrieveAPIView):
@@ -305,12 +303,6 @@ class DetailUserAccount(RetrieveAPIView):
         )
 
 
-<<<<<<< HEAD
-        
-       
-
-=======
->>>>>>> develop
 class EditUserProfileView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     throttle_classes = [UserListThrottle]
@@ -318,12 +310,9 @@ class EditUserProfileView(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
-<<<<<<< HEAD
         
 
 
-=======
->>>>>>> develop
 
 
 class LogOutView(APIView):
