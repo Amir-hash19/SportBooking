@@ -164,10 +164,7 @@ class AddAdminUserSerializer(serializers.Serializer):
 
         return user
 
-<<<<<<< HEAD
 
-=======
->>>>>>> develop
 
 class CreateComplexManagerRequestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -270,9 +267,5 @@ class RemoveAdminUserSerializer(serializers.Serializer):
         group = Group.objects.get(name=SUPER_ADMIN_GROUP)
 
         user.groups.remove(group)
-<<<<<<< HEAD
-        return user    
 
-=======
-        return user
->>>>>>> develop
+        return user    

@@ -22,6 +22,7 @@ from rest_framework.exceptions import NotFound
 from .throttles import UserListThrottle
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from .paginations import UserPagination
 
 logger = logging.getLogger(__name__)
 
@@ -259,24 +260,21 @@ class SubmitComplexManagerRequestView(APIView):
 class UserListView(ListAPIView):
     permission_classes = [IsSuperAdmin]
     serializer_class = serializers.ListUserSerializer
-<<<<<<< HEAD
+
     throttle_classes = [UserListThrottle]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-=======
+
     pagination_class = UserPagination
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
         filters.OrderingFilter,
     ]
->>>>>>> develop
+
     search_fields = ["phone_number", "email"]
     filterset_class = UserFilter
 
     def get_queryset(self):
-<<<<<<< HEAD
-        return UserAccount.objects.select_related("profile").all()
-=======
         return UserAccount.objects.select_related("profile").only(
             "name",
             "last_name",
@@ -291,7 +289,7 @@ class UserListView(ListAPIView):
             "profile__gender",
             "profile__second_number",
         )
->>>>>>> develop
+
 
 
 class DetailUserAccount(RetrieveAPIView):
@@ -305,12 +303,8 @@ class DetailUserAccount(RetrieveAPIView):
         )
 
 
-<<<<<<< HEAD
-        
-       
 
-=======
->>>>>>> develop
+
 class EditUserProfileView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     throttle_classes = [UserListThrottle]
@@ -318,14 +312,8 @@ class EditUserProfileView(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
-<<<<<<< HEAD
-        
 
-
-=======
->>>>>>> develop
-
-
+ 
 class LogOutView(APIView):
     permission_classes = [IsAuthenticated]
 
