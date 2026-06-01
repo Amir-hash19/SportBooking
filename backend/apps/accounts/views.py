@@ -18,6 +18,10 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from . import serializers
 from .filters import UserFilter
+from rest_framework.exceptions import NotFound
+from .throttles import UserListThrottle
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 from .models import UserAccount
 from .paginations import UserPagination
 from .permissions import IsSuperAdmin
@@ -259,6 +263,8 @@ class SubmitComplexManagerRequestView(APIView):
 class UserListView(ListAPIView):
     permission_classes = [IsSuperAdmin]
     serializer_class = serializers.ListUserSerializer
+    throttle_classes = [UserListThrottle]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     pagination_class = UserPagination
     filter_backends = [
         DjangoFilterBackend,
@@ -267,9 +273,9 @@ class UserListView(ListAPIView):
     ]
     search_fields = ["phone_number", "email"]
     filterset_class = UserFilter
-    throttle_classes = [UserListThrottle]
 
     def get_queryset(self):
+
         return UserAccount.objects.select_related("profile").only(
             "name",
             "last_name",
@@ -288,8 +294,8 @@ class UserListView(ListAPIView):
 
 class DetailUserAccount(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = serializers.ListUserSerializer
     throttle_classes = [UserListThrottle]
+    serializer_class = serializers.ListUserSerializer
 
     def get_object(self):
         return UserAccount.objects.select_related("profile").get(
@@ -299,11 +305,14 @@ class DetailUserAccount(RetrieveAPIView):
 
 class EditUserProfileView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = serializers.ListUserSerializer
     throttle_classes = [UserListThrottle]
+    serializer_class = serializers.ListUserSerializer
 
     def get_object(self):
         return self.request.user
+        
+
+
 
 
 class LogOutView(APIView):

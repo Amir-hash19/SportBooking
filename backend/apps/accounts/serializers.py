@@ -3,6 +3,11 @@ import re
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import Group
 from django.core.validators import RegexValidator
+
+from django.contrib.auth import authenticate
+from backend.apps.accounts.models import UserAccount
+from backend.apps.accounts.models import UserAccount, ComplexManagerRequest
+
 from django.db import transaction
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
@@ -164,6 +169,7 @@ class AddAdminUserSerializer(serializers.Serializer):
         return user
 
 
+
 class CreateComplexManagerRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComplexManagerRequest
@@ -234,6 +240,7 @@ class ListUserSerializer(serializers.ModelSerializer):
         return instance
 
 
+
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True, min_length=8)
@@ -264,4 +271,8 @@ class RemoveAdminUserSerializer(serializers.Serializer):
         group = Group.objects.get(name=SUPER_ADMIN_GROUP)
 
         user.groups.remove(group)
-        return user
+        return user    
+
+
+       
+
