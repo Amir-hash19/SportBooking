@@ -1,11 +1,11 @@
-from django.db import models
-from django.conf import settings
-from django.core.exceptions import ValidationError
-from datetime import timedelta, datetime
-from backend.apps.accounts.models import UserAccount, Profile
-from backend.apps.venues.models import Pitch, Venue, Image
-from datetime import datetime, timedelta, timezone
 import secrets
+from datetime import datetime, timezone
+
+from django.core.exceptions import ValidationError
+from django.db import models
+
+from backend.apps.accounts.models import UserAccount
+from backend.apps.venues.models import Pitch
 
 
 class Booking(models.Model):

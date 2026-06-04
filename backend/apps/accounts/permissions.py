@@ -1,5 +1,4 @@
 from rest_framework import permissions
-from django.contrib.auth.models import Group
 
 
 class IsSuperAdmin(permissions.BasePermission):
@@ -26,6 +25,12 @@ class IsSuperAdmin(permissions.BasePermission):
 
 
 class IsComplexManager(permissions.BasePermission):
+    """
+        check users is the member of the manager complex or not
+        user must be authenticated
+        user must not be a superuser 
+        
+    """
 
     def has_permission(self, request, view):
         return (

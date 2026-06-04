@@ -1,25 +1,30 @@
-from rest_framework import serializers
-from django.contrib.auth.hashers import make_password
-from .models import UserAccount, Profile
-from django.contrib.auth.password_validation import validate_password
-from django.contrib.auth import get_user_model
-from django.core.validators import RegexValidator
-from django.contrib.auth import authenticate
-from backend.apps.accounts.models import UserAccount
-from backend.apps.accounts.models import UserAccount, ComplexManagerRequest
-from django.db import transaction
-from .signals import SUPER_ADMIN_GROUP
-from django.contrib.auth.models import Group
-from phonenumber_field.serializerfields import PhoneNumberField
 import re
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.models import Group
+from django.core.validators import RegexValidator
+from django.db import transaction
+from phonenumber_field.serializerfields import PhoneNumberField
+from rest_framework import serializers
+
+from backend.apps.accounts.models import ComplexManagerRequest, UserAccount, Profile
+
+from .models import Profile, UserAccount
+from .signals import SUPER_ADMIN_GROUP
 
 User = get_user_model()
 
 SUPER_ADMIN_GROUP = "SuperAdmin"
 
 
-class UserSignupSerializer(serializers.ModelSerializer):
 
+class UserSignupSerializer(serializers.ModelSerializer):
+    """
+        Serializer for user registration. Validates Iranian phone number format,
+        enforces strong password policy, and ensures password confirmation match.
+        Creates user atomically after stripping confirm_password from validated data.
+        Returns 400 for duplicate phone, weak password, or mismatched passwords.
+
+    """
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -101,7 +106,13 @@ class UserSignupSerializer(serializers.ModelSerializer):
         return user
 
 
+
 class LoginSerializer(serializers.ModelSerializer):
+    """
+        Serializer for user login via phone number and password.
+        Checks user existence, authenticates credentials, and verifies active status.
+        Returns 400 if phone not found, credentials are wrong, or account is deactivated.
+    """
     phone_number = serializers.CharField()
     password = serializers.CharField(write_only=True, style={"input": "password"})
 
@@ -128,6 +139,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
         data["user"] = user
         return data
+
 
 
 class AddAdminUserSerializer(serializers.Serializer):
@@ -165,7 +177,13 @@ class AddAdminUserSerializer(serializers.Serializer):
         return user
 
 
+
 class CreateComplexManagerRequestSerializer(serializers.ModelSerializer):
+    """
+        Serializer for submitting a complex manager role request.
+        Blocks request if user is already a manager or has a pending request.
+        Creates request tied to the authenticated user from context.
+    """
     class Meta:
         model = ComplexManagerRequest
         fields = []
@@ -187,7 +205,9 @@ class CreateComplexManagerRequestSerializer(serializers.ModelSerializer):
         return ComplexManagerRequest.objects.create(user=self.context["request"].user)
 
 
+
 class ProfileUserSerializer(serializers.ModelSerializer):
+    gender = serializers.CharField(source="get_gender_display", read_only=True)
     class Meta:
         model = Profile
         fields = [
@@ -202,7 +222,13 @@ class ProfileUserSerializer(serializers.ModelSerializer):
         ]
 
 
+
 class ListUserSerializer(serializers.ModelSerializer):
+    """
+        Serializer for retrieving and updating user account with nested profile.
+        Handles partial profile update separately if profile data is provided.
+        Exposes name, last name, phone, email, date created, and profile fields.
+    """
     profile = ProfileUserSerializer(required=False)
 
     class Meta:
@@ -235,7 +261,13 @@ class ListUserSerializer(serializers.ModelSerializer):
         return instance
 
 
+
 class ChangePasswordSerializer(serializers.Serializer):
+    """
+        Serializer for changing user password.
+        Validates that new_password and confirm_password match, with 8 char minimum.
+        Raises 400 if passwords don't match or requirements aren't met.
+    """
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True, min_length=8)
     confirm_password = serializers.CharField(required=True)
@@ -246,7 +278,13 @@ class ChangePasswordSerializer(serializers.Serializer):
         return data
 
 
+
 class RemoveAdminUserSerializer(serializers.Serializer):
+    """
+        Serializer for removing a user from the SuperAdmin group by phone number.
+        Validates that the user exists and is currently a SuperAdmin.
+        Raises 400 if user not found or doesn't belong to SuperAdmin group.
+    """
     phone_number = PhoneNumberField()
 
     def validate_phone_number(self, value):
@@ -267,3 +305,53 @@ class RemoveAdminUserSerializer(serializers.Serializer):
         user.groups.remove(group)
 
         return user
+
+
+
+class ReviewUserManagerRequestSerializer(serializers.ModelSerializer):
+    """
+
+    Serializer for admin review of complex manager requests.
+    Updates status and review note, sets reviewed_by from authenticated user in context.
+
+    """
+
+    class Meta:
+        model = ComplexManagerRequest
+
+        fields = ["status", "review_note", "reviewed_by"]
+
+    def update(self, instance, validated_data):
+        instance.status = validated_data.get("status", instance.status)
+        instance.review_note = validated_data.get("review_note", instance.review_note)
+        instance.reviewed_by = self.context["request"].user
+        instance.save()
+        return instance
+
+
+
+
+
+class UserRequestManagerSerializer(serializers.ModelSerializer):
+    """
+
+        Serializer for listing complex manager requests with full user profile and reviewer name.
+        Returns reviewer's full name via SerializerMethodField, null if not yet reviewed.
+    
+    """
+    user = ListUserSerializer(read_only=True)
+    reviewed_by = serializers.SerializerMethodField()
+
+    def get_reviewed_by(self, obj):
+        if obj.reviewed_by:
+            return f"{obj.reviewed_by.name} {obj.reviewed_by.last_name}"
+        return None
+    
+
+    class Meta:
+        model = ComplexManagerRequest
+        fields = [
+        "status", "user",
+        "review_note", 
+        "reviewed_at", "created_at","reviewed_by"
+        ]

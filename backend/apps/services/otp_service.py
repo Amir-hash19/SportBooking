@@ -1,7 +1,7 @@
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime
+
 from django.core.cache import cache
-from django.conf import settings
 
 
 class OTPService:
