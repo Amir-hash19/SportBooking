@@ -17,8 +17,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from . import serializers
-from .filters import UserFilter
-from .models import UserAccount
+from .filters import UserFilter, ComplexManagerRequestFilter
+from .models import UserAccount, Profile, ComplexManagerRequest
 from .paginations import UserPagination
 from .permissions import IsSuperAdmin
 from .throttles import UserListThrottle
@@ -233,6 +233,22 @@ class CreateAdminUserView(APIView):
 
 
 class SubmitComplexManagerRequestView(APIView):
+    """
+    users send rquest to be a Complex Manager
+    this request would be accept by admin
+
+    args:
+        user must have access to this endpoint 
+        should be Authenticated
+        send request without body data
+        JWT token
+
+    returns:
+            "message": "Your request has been submitted",
+            "request_id": manager_request.id,
+            "status": manager_request.status,
+            status code 201 created
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.CreateComplexManagerRequestSerializer
 
@@ -257,6 +273,19 @@ class SubmitComplexManagerRequestView(APIView):
 
 @method_decorator(cache_page(60 * 15), name="dispatch")
 class UserListView(ListAPIView):
+    """
+        api will return a list of users with their profiles for admin
+
+        args:
+            required IsSuperAdmin permission
+            HTTP method : GET
+            JWT token
+        returns:
+                list of users 
+                provides searching and filtering data
+                200 OK status code  
+
+    """
     permission_classes = [IsSuperAdmin]
     serializer_class = serializers.ListUserSerializer
     pagination_class = UserPagination
@@ -287,6 +316,18 @@ class UserListView(ListAPIView):
 
 
 class DetailUserAccount(RetrieveAPIView):
+    """
+        the endpoint returns user details account and profile together
+
+        args:
+            must be authenticated
+            HTTP method : GET
+        returns:
+                user data without password
+                users can not send request more than the limitaions sets
+                status code 200 OK    
+
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.ListUserSerializer
     throttle_classes = [UserListThrottle]
@@ -298,6 +339,20 @@ class DetailUserAccount(RetrieveAPIView):
 
 
 class EditUserProfileView(UpdateAPIView):
+    """
+        client can edit their own account and profile
+        but can not edit the password
+        must be authenticated
+
+        args:
+            JWT token in header
+            HTTP method: PUT or PATCH (for partial update)
+        
+        returns:
+                user data
+                status code 200 OK
+                
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.ListUserSerializer
     throttle_classes = [UserListThrottle]
@@ -307,6 +362,12 @@ class EditUserProfileView(UpdateAPIView):
 
 
 class LogOutView(APIView):
+    """
+        Logout user by blacklisting the provided JWT refresh token.
+        Requires authentication. Accepts POST request with 'refresh' token in body.
+        Returns 205 on success, 400 if token is invalid or missing.
+
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -330,6 +391,12 @@ class LogOutView(APIView):
 
 
 class ChangePasswordView(APIView):
+    """
+        Change authenticated user's password via POST request.
+        Validates old password before setting the new one.
+        Returns 200 on success, 409 if old password is wrong, 400 for invalid data.
+
+    """
     permission_classes = [IsAuthenticated]
     throttle_classes = [UserListThrottle]
     serializer_class = serializers.ChangePasswordSerializer
@@ -357,6 +424,12 @@ class ChangePasswordView(APIView):
 
 
 class RemoveAdminUserView(CreateAPIView):
+    """
+        Remove a user from the SuperAdmin group. Accessible only by SuperAdmins.
+        Accepts POST with user data, validates via serializer, then downgrades the user.
+        Returns 200 with phone number on success, 400 for invalid data.
+
+    """
     permission_classes = [IsSuperAdmin]
     throttle_classes = [UserListThrottle]
 
@@ -376,3 +449,64 @@ class RemoveAdminUserView(CreateAPIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+
+class ReviewUserManagerRequestView(UpdateAPIView):
+    """
+
+        Update status and review note of a complex manager request by SuperAdmin.
+        Accepts partial PATCH request. Sets reviewed_by automatically from authenticated user.
+        Returns 200 on success, 400 for invalid data, 404 if request not found.
+   
+    """
+    permission_classes = [IsSuperAdmin]
+    throttle_classes = [UserListThrottle]
+    serializer_class = serializers.ReviewUserManagerRequestSerializer
+    lookup_field = "pk"
+    queryset = ComplexManagerRequest.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {"message":"Request reviewed successfully"}
+        ,status=status.HTTP_200_OK)
+        
+
+
+
+@method_decorator(cache_page(60 * 15), name="dispatch")
+class ListUserRequestManagerView(ListAPIView):
+    """
+        api will return a list of users request whoam want to be a complex manager for admin
+        admin can review their request 
+
+        args:
+            required IsSuperAdmin permission
+            HTTP method : GET
+            JWT token
+        returns:
+                list of users requests 
+                provides searching and filtering data
+                200 OK status code  
+
+    """
+    permission_classes = [IsSuperAdmin]
+    serializer_class = serializers.UserRequestManagerSerializer
+    pagination_class = UserPagination
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    search_fields = ["status"]
+    filterset_class = ComplexManagerRequestFilter
+    throttle_classes = [UserListThrottle]
+
+    def get_queryset(self):
+        return ComplexManagerRequest.objects.select_related("user__profile","reviewed_by__profile").all()
+        

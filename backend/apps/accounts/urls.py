@@ -32,4 +32,16 @@ urlpatterns = [
         views.RemoveAdminUserView.as_view(),
         name="remove_user_admin",
     ),
+
+    path(
+        "admin/requests/<int:pk>/review/",
+        views.ReviewUserManagerRequestView.as_view(),
+        name="review-user-manager-request"
+    ),
+
+    path(
+        "admin/list/requests/",
+        views.ListUserRequestManagerView.as_view(),
+        name="admin-list-request"
+    )
 ]
