@@ -168,7 +168,7 @@ class LoginView(APIView):
         serializer = serializers.LoginSerializer(data=request.data)
 
         if not serializer.is_valid():
-            logger.warning(f"User Login validation failed: {serializer.errors}")
+            logger.error(f"User Login validation failed: {serializer.errors}")
             return Response(
                 {
                     "success": False,
@@ -188,6 +188,14 @@ class LoginView(APIView):
                 {"success": False, "message": "Failed to create authentication token"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+        
+        logger.info(
+            "User login Successful",
+            extra={
+                "user_id":user.id,
+                "phone_number": user.phone_number
+            }
+        )
 
         return Response(
             {
@@ -221,7 +229,25 @@ class CreateAdminUserView(APIView):
 
         serializer.is_valid(raise_exception=True)
 
-        user = serializer.save()
+        try:
+            user = serializer.save()
+        except Exception:
+            logger.exception(
+                "Failed to promote user to SuperAdmin"
+            )    
+            raise
+
+        logger.info(
+            "User promoted to SuperAdmin",
+            extra={
+                "event": "promote_superadmin",
+                "performed_by":request.user.id,
+                "target_user_id":user.id,
+                "ip":request.META.get("REMOTE_ADDR"),
+                "method": request.method
+                
+            }
+        )
 
         return Response(
             {
@@ -261,6 +287,16 @@ class SubmitComplexManagerRequestView(APIView):
         serializer.is_valid(raise_exception=True)
 
         manager_request = serializer.save()
+
+        logger.info(
+            "request has been sent",
+            extra={
+                "event":"Request_for_complex_manager",
+                "performed_by":request.user.id,
+                "ip":request.META.get("REMOTE_ADDR"),
+                "method": request.method
+            }
+        )
 
         return Response(
             {
@@ -306,6 +342,19 @@ class UserListView(ListAPIView):
 
     search_fields = ["phone_number", "email"]
     filterset_class = UserFilter
+    
+    def list(self, request, *args, **kwargs):
+        
+        logger.info(
+            "User list requested",
+            extra={
+                "event":"user_list_view",
+                "admin_id":request.user.id,
+                "search": request.query_params.get("search"),
+                "page":request.query_params.get("page"),
+            }
+        )
+        return super().list(request, *args, **kwargs)
 
     def get_queryset(self):
         return UserAccount.objects.select_related("profile").only(
@@ -368,6 +417,17 @@ class EditUserProfileView(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
+    
+    def perform_update(self, serializer):
+        user = serializer.save()
+
+        logger.info(
+            "user profile updated",
+            extra={
+                "event": "profile_updated",
+                "user_id": user.id
+            }
+        )
 
 
 class LogOutView(APIView):
@@ -421,9 +481,26 @@ class ChangePasswordView(APIView):
                     {"detail": "Old password is incorrect"},
                     status=status.HTTP_409_CONFLICT,
                 )
+            
+            logger.warning(
+                "Password Change failed due to incorrect old password",
+                extra={
+                    "event":"password_change_faild",
+                    "user_id":user.id
+                }
+            )
 
             user.set_password(serializer.validated_data["new_password"])
             user.save()
+
+            logger.info(
+                "Password Changed Successfully",
+                extra={
+                    "event":"password_changed",
+                    "user_id":user.id,
+                    "phone_number": str(user.phone_number)
+                }
+            )
 
             return Response(
                 {"detail": "Password changed successfully"}, status=status.HTTP_200_OK
@@ -450,6 +527,16 @@ class RemoveAdminUserView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.save()
+
+        logger.warning(
+            "SuperAdmin role removed",
+            extra={
+                "event": "remove_superadmin",
+                "performed_by": request.user.id,
+                "target_user_id": user.id,
+                "target_phone": str(user.phone_number),
+                }
+            )
 
         return Response(
             {
@@ -515,6 +602,19 @@ class ListUserRequestManagerView(ListAPIView):
     search_fields = ["status"]
     filterset_class = ComplexManagerRequestFilter
     throttle_classes = [UserListThrottle]
+
+    def list(self, request, *args, **kwargs):
+        
+        logger.info(
+            "User list requested",
+            extra={
+                "event":"user_list_view",
+                "admin_id":request.user.id,
+                "search": request.query_params.get("search"),
+                "page":request.query_params.get("page"),
+            }
+        )
+        return super().list(request, *args, **kwargs)
 
     def get_queryset(self):
         return ComplexManagerRequest.objects.select_related("user__profile","reviewed_by__profile").all()

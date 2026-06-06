@@ -5,10 +5,10 @@ from backend.apps.accounts.models import UserAccount
 
 
 class Venue(models.Model):
-    manager = models.ForeignKey(
+    manager = models.OneToOneField(
         to=UserAccount,
         on_delete=models.CASCADE,
-        related_name="managed_venues",
+        related_name="managed_venue",
         verbose_name="manager of venue",
     )
 
@@ -79,7 +79,7 @@ class Pitch(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(unique=True)
+    
 
     class Meta:
         db_table = "pitches"
@@ -90,7 +90,7 @@ class Pitch(models.Model):
             models.Index(fields=["is_active"]),
             models.Index(fields=["price_per_hour"]),
             models.Index(fields=["capacity"]),
-            models.Index(fields=["slug"]),
+            
             models.Index(fields=["-created_at"]),
         ]
         ordering = ["venue", "pitch_name"]
@@ -114,19 +114,19 @@ class WorkingHours(models.Model):
         to=Pitch, on_delete=models.CASCADE, related_name="working_hours"
     )
     day_of_week = models.IntegerField(choices=DAYS_OF_WEEK, db_index=True)
-    start_time = models.TimeField(verbose_name="pitch_start_time")
-    end_time = models.TimeField(verbose_name="pitch_end_time")
+    start_time = models.TimeField(verbose_name="pitch_start_time", null=True, blank=True)
+    end_time = models.TimeField(verbose_name="pitch_end_time", null=True, blank=True)
     is_closed = models.BooleanField(default=False)
 
+
     def clean(self):
+        if self.is_closed:
+            return 
+        if not self.start_time or not self.end_time:
+            raise ValidationError("Start time and end time are required when open")
         if self.start_time >= self.end_time:
-            raise ValidationError("The start time must be less than end time")
-        overlapping = WorkingHours.objects.filter(
-            pitch=self.pitch, day_of_week=self.day_of_week, is_closed=False
-        ).exclude(id=self.id)
-        for wh in overlapping:
-            if self.start_time < wh.end_time and self.end_time > wh.start_time:
-                raise ValidationError(f"Conflict hours  {wh.start_time}-{wh.end_time}")
+            raise ValidationError("The start time must be less then end time")
+
 
     def save(self, *args, **kwargs):
         self.full_clean()
