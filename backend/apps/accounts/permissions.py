@@ -36,16 +36,6 @@ class IsComplexManager(permissions.BasePermission):
         return (
             request.user.is_authenticated
             and request.user.is_complex_manager
-            and not request.user.is_super_admin
-        )
-
-
-class IsRegularUser(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return (
-            request.user.is_authenticated
-            and not request.user.is_super_admin
-            and not request.user.is_complex_manager
         )
 
 

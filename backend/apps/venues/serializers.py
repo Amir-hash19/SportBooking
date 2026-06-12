@@ -16,7 +16,7 @@ class CreateVenueSerializer(serializers.ModelSerializer):
         model=Venue
         fields = ["venue_name", "description",
         "address", "phone",
-        "facilities", "ruels", 
+        "facilities", "rules", 
         "cancellation_policy",
         "is_active"] 
 
@@ -32,3 +32,28 @@ class CreateVenueSerializer(serializers.ModelSerializer):
 
         
             
+
+
+class ListVenueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Venue
+        fields = ["venue_name", "description", "address"
+        ,"phone","facilities","rules","cancellation_policy"
+        ,"created_at"
+        ]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        if self.context["request"].user.is_superuser:
+            data["is_active"] = instance.is_active
+            data["is_verified"] = instance.is_verified
+            data["updated_at"] = instance.updated_at
+            return data
+
+
+
+
+
+
+

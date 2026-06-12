@@ -325,14 +325,7 @@ class UserListView(ListAPIView):
     """
     permission_classes = [IsSuperAdmin]
     serializer_class = serializers.ListUserSerializer
-
     throttle_classes = [UserListThrottle]
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-
     pagination_class = UserPagination
     filter_backends = [
         DjangoFilterBackend,

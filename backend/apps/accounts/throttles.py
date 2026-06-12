@@ -9,3 +9,11 @@ class UserListThrottle(UserRateThrottle):
 class VenueCreateThrottle(UserRateThrottle):
     rate = "5/hour"
     scope = "venue_create"
+
+
+
+
+
+class VenueListThrottle(UserRateThrottle):
+    rate = "50/hour"
+    scope = "venue_list"
