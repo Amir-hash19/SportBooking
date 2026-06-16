@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from . import serializers
-from .models import Venue, Pitch,WorkingHours,Image
+from .models import Venue, Pitch,PitchSchedule,Image
 
 from backend.apps.venues.mixins import VenueCreateMixin
 
@@ -63,3 +63,6 @@ class ListVenueView(ListAPIView):
         cache.set(cache_key, response.data, 60 * 20)
         return response
             
+
+
+

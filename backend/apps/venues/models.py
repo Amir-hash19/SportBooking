@@ -30,13 +30,14 @@ class Venue(models.Model):
             models.Index(fields=["is_active", "is_verified"]),
             models.Index(fields=["is_active"]),
             models.Index(fields=["venue_name"]),
-            models.Index(fields=["slug"]),
             models.Index(fields=["-created_at"]),
         ]
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.name} - {self.is_active}"
+        return f"{self.venue_name} - {self.is_active}"
+
+
 
 
 class Pitch(models.Model):
@@ -96,10 +97,9 @@ class Pitch(models.Model):
         ordering = ["venue", "pitch_name"]
 
     def __str__(self):
-        return f"{self.venue.venue_name} - {self.pitch_name}"
+        return f"{self.venue.venue_name} - {self.pitch.pitch_name}"
 
-
-class WorkingHours(models.Model):
+class PitchSchedule(models.Model):
 
     DAYS_OF_WEEK = [
         (1, "saturday"),
@@ -110,41 +110,46 @@ class WorkingHours(models.Model):
         (6, "thursday"),
         (7, "friday"),
     ]
+
     pitch = models.ForeignKey(
-        to=Pitch, on_delete=models.CASCADE, related_name="working_hours"
+        Pitch,
+        on_delete=models.CASCADE,
+        related_name="working_hours"
     )
-    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK, db_index=True)
-    start_time = models.TimeField(verbose_name="pitch_start_time", null=True, blank=True)
-    end_time = models.TimeField(verbose_name="pitch_end_time", null=True, blank=True)
-    is_closed = models.BooleanField(default=False)
+
+    day_of_week = models.PositiveSmallIntegerField(
+        choices=DAYS_OF_WEEK,
+        db_index=True
+    )
+
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    class Meta:
+        ordering = ["day_of_week", "start_time"]
 
 
     def clean(self):
-        if self.is_closed:
-            return 
-        if not self.start_time or not self.end_time:
-            raise ValidationError("Start time and end time are required when open")
+        super().clean()
+
         if self.start_time >= self.end_time:
-            raise ValidationError("The start time must be less then end time")
-
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-    class Meta:
-        db_table = "working_hours"
-        unique_together = [["pitch", "day_of_week"]]
-        indexes = [
-            models.Index(fields=["pitch", "day_of_week"]),
-            models.Index(fields=["pitch", "is_closed"]),
-        ]
-        ordering = ["pitch", "day_of_week", "start_time"]
-
-    def __str__(self):
-        if self.is_closed:
-            return f"{self.pitch.name} - {self.get_day_of_week_display()}: تعطیل"
-        return f"{self.pitch.name} - {self.get_day_of_week_display()}: {self.start_time} تا {self.end_time}"
+            raise ValidationError(
+                "start time must be less than end time."
+            )
+        
+        overlap = PitchSchedule.objects.filter(
+            pitch = self.pitch,
+            day_of_week = self.day_of_week,
+            start_time__lt=self.end_time,
+            end_time__gt=self.start_time
+        )
+        if self.pk:
+            overlap = overlap.exclude(pk=self.pk)
+        
+        if overlap.exists():
+            raise ValidationError(
+                "This time range overlaps with another schedule."
+            )
 
 
 def pitch_image_path(instance, filename):
@@ -155,6 +160,7 @@ def validate_image_size(value):
     filesize = value.size
     if filesize > 5 * 1024 * 1024:
         raise ValidationError("Images must be less than 5 megabyte")
+
 
 
 class Image(models.Model):
