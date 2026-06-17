@@ -1,5 +1,6 @@
 import logging
 
+from datetime import datetime, timedelta, time
 from django.db import IntegrityError
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -26,6 +27,10 @@ from backend.apps.accounts.throttles import VenueCreateThrottle, VenueListThrott
 from backend.apps.venues.paginations import VenuePagination
 
 from django.core.cache import cache
+
+from .serializers import PitchSerializer, PitchScheduleSerializer
+
+from .utils import merge_time_ranges
 
 
 class CreateVenueView(VenueCreateMixin, CreateAPIView):
@@ -66,3 +71,67 @@ class ListVenueView(ListAPIView):
 
 
 
+class PitchCreateView(APIView):
+    permission_classes = [IsComplexManager]
+    serializer_class = serializers.PitchSerializer
+    def post(self, request):
+        serializer = serializers.PitchSerializer(
+            data=request.data,
+            context={"request": request}  
+        )
+        serializer.is_valid(raise_exception=True)
+        pitch = serializer.save()
+        return Response(serializers.PitchSerializer(pitch).data, status=201)
+
+
+
+
+class PitchAvailableSlotsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pitch_id):
+        day = int(request.query_params.get("day"))
+        slot_minutes = int(request.query_params.get("slot", 30))
+
+        pitch = Pitch.objects.get(id=pitch_id)
+
+        schedules = PitchSchedule.objects.filter(
+            pitch=pitch,
+            day_of_week=day
+        )
+
+       
+        merged_schedules = merge_time_ranges(schedules)
+
+        result = []
+
+       
+        for start_time, end_time in merged_schedules:
+
+            current = datetime.combine(datetime.today(), start_time)
+            end = datetime.combine(datetime.today(), end_time)
+
+            while current + timedelta(minutes=slot_minutes) <= end:
+                result.append({
+                    "start": current.time().strftime("%H:%M"),
+                    "end": (current + timedelta(minutes=slot_minutes)).time().strftime("%H:%M"),
+                    "is_available": True
+                })
+                current += timedelta(minutes=slot_minutes)
+
+        return Response({
+            "pitch_id": pitch_id,
+            "day": day,
+            "slot_minutes": slot_minutes,
+            "slots": result
+        }, status=status.HTTP_200_OK)
+    
+
+
+
+
+class RetrievePitchView(RetrieveAPIView):
+    permission_classes = [AllowAny]
+    queryset = Pitch.objects.filter(is_active=True).select_related('venue')
+    serializer_class = serializers.PitchRetrieveSerializer
+    

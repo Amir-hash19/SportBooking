@@ -42,10 +42,10 @@ class Venue(models.Model):
 
 class Pitch(models.Model):
     SPORT_TYPES = [
-        ("1", "football"),
-        ("2", "futsal"),
-        ("3", "volleyball"),
-        ("4", "tennis"),
+        ("football", "football"),
+        ("futsal", "futsal"),
+        ("volleyball", "volleyball"),
+        ("tennis", "tennis"),
     ]
 
     SURFACE_TYPES = [
@@ -97,27 +97,32 @@ class Pitch(models.Model):
         ordering = ["venue", "pitch_name"]
 
     def __str__(self):
-        return f"{self.venue.venue_name} - {self.pitch.pitch_name}"
+        return f"{self.venue.venue_name} - {self.pitch_name}"
+
+
+
+
 
 class PitchSchedule(models.Model):
 
     DAYS_OF_WEEK = [
-        (1, "saturday"),
-        (2, "sunday"),
-        (3, "monday"),
-        (4, "tuesday"),
-        (5, "wednesday"),
-        (6, "thursday"),
-        (7, "friday"),
+        ("saturday", "saturday"),
+        ("sunday", "sunday"),
+        ("monday", "monday"),
+        ("tuesday", "tuesday"),
+        ("wednesday", "wednesday"),
+        ("thursday", "thursday"),
+        ("friday", "friday"),
     ]
 
     pitch = models.ForeignKey(
         Pitch,
         on_delete=models.CASCADE,
-        related_name="working_hours"
+        related_name="schedules"
     )
 
-    day_of_week = models.PositiveSmallIntegerField(
+    day_of_week = models.CharField(
+        max_length=10,
         choices=DAYS_OF_WEEK,
         db_index=True
     )
@@ -129,27 +134,7 @@ class PitchSchedule(models.Model):
         ordering = ["day_of_week", "start_time"]
 
 
-    def clean(self):
-        super().clean()
 
-        if self.start_time >= self.end_time:
-            raise ValidationError(
-                "start time must be less than end time."
-            )
-        
-        overlap = PitchSchedule.objects.filter(
-            pitch = self.pitch,
-            day_of_week = self.day_of_week,
-            start_time__lt=self.end_time,
-            end_time__gt=self.start_time
-        )
-        if self.pk:
-            overlap = overlap.exclude(pk=self.pk)
-        
-        if overlap.exists():
-            raise ValidationError(
-                "This time range overlaps with another schedule."
-            )
 
 
 def pitch_image_path(instance, filename):
