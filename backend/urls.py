@@ -5,6 +5,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from django.conf import settings
 
 
 urlpatterns = [
@@ -24,3 +25,9 @@ urlpatterns = [
     path("api/v1/", include("backend.apps.accounts.urls")),
     path("api/v1/", include("backend.apps.venues.urls")),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += [
+        path("__debug__/", include("debug_toolbar.urls")),
+    ]

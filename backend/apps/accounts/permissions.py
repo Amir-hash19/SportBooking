@@ -37,7 +37,13 @@ class IsComplexManager(permissions.BasePermission):
             request.user.is_authenticated
             and request.user.is_complex_manager
         )
+    
 
+class IsPitchOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.venue.manager == request.user
+    
+    
 
 class IsProfileComplete(permissions.BasePermission):
     """

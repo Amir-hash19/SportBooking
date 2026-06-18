@@ -34,6 +34,12 @@ DEBUG = config("DEBUG", default=True)
 ALLOWED_HOSTS = ["*"]
 
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+
+
 # Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -50,6 +56,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "django_filters",
     "drf_spectacular",
+    "debug_toolbar",
     # My apps
     "backend.apps.accounts.apps.AccountsConfig",
     "backend.apps.bookings.apps.BookingsConfig",
@@ -58,6 +65,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # debug toolbar
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     # Cors headers middleware
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",

@@ -24,7 +24,7 @@ Pillow==11.0.0
 requests==2.32.3
 django-phonenumber-field==8.4.0
 phonenumbers==9.0.30
-
+django-debug-toolbar==6.3.0
 
 # # SMS Provider (Kavenegar)
 # kavenegar==1.4.2

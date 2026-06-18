@@ -156,7 +156,6 @@ class PitchListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pitch
         fields = [
-            'id',
             'pitch_name',
             'sport_type',
             'surface_type',

@@ -12,9 +12,10 @@ from rest_framework.generics import (
     ListAPIView,
     RetrieveAPIView,
     UpdateAPIView,
+    RetrieveUpdateDestroyAPIView
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from backend.apps.accounts.permissions import IsComplexManager, IsProfileComplete, IsSuperAdmin
+from backend.apps.accounts.permissions import IsComplexManager, IsProfileComplete, IsSuperAdmin, IsPitchOwner
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
@@ -165,3 +166,15 @@ class PitchListView(ListAPIView):
             qs = qs.filter(is_active=True)
         return qs    
 
+
+
+
+
+class PitchUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsComplexManager, IsPitchOwner]
+    serializer_class = serializers.PitchListSerializer
+
+    def get_queryset(self):
+        return Pitch.objects.select_related('venue').filter(
+            venue__manager=self.request.user
+        )

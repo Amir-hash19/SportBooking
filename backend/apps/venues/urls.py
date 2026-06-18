@@ -34,5 +34,12 @@ urlpatterns = [
         "pitchs/list/",
         views.PitchListView.as_view(),
         name="pitch-list-by-permission"
-    )
+    ),
+
+    path(
+        "pitchs/<int:pk>/",
+        views.PitchUpdateDeleteView.as_view(),
+        name="pitch-detail-delete"
+    ),
+    
 ]
