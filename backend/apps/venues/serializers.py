@@ -147,3 +147,34 @@ class PitchRetrieveSerializer(serializers.ModelSerializer):
         "surface_type","capacity","has_lighting","has_changing_room",
         "has_parking","has_cafeteria","updated_at","venue_name"
         ]
+
+
+
+class PitchListSerializer(serializers.ModelSerializer):
+    venue_name = serializers.CharField(source='venue.venue_name', read_only=True)
+    
+    class Meta:
+        model = Pitch
+        fields = [
+            'id',
+            'pitch_name',
+            'sport_type',
+            'surface_type',
+            'capacity',
+            'price_per_hour',
+            'weekend_price',
+            'has_lighting',
+            'has_changing_room',
+            'has_parking',
+            'has_cafeteria',
+            'venue_name',
+        ]
+
+
+
+class PitchAdminListSerializer(PitchListSerializer):
+    class Meta(PitchListSerializer.Meta):
+        fields = PitchListSerializer.Meta.fields + ["is_active","created_at","updated_at"]
+        
+
+  

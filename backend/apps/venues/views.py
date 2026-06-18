@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 from rest_framework import filters, status
 from rest_framework.generics import (
     CreateAPIView,
@@ -31,7 +32,7 @@ from django.core.cache import cache
 from .serializers import PitchSerializer, PitchScheduleSerializer
 
 from .utils import merge_time_ranges
-
+from .filters import Pitchfilter
 
 class CreateVenueView(VenueCreateMixin, CreateAPIView):
     permission_classes = [IsComplexManager & IsProfileComplete]
@@ -132,6 +133,35 @@ class PitchAvailableSlotsAPIView(APIView):
 
 class RetrievePitchView(RetrieveAPIView):
     permission_classes = [AllowAny]
-    queryset = Pitch.objects.filter(is_active=True).select_related('venue')
+    queryset = Pitch.objects.select_related("venue").filter(is_active=True)
     serializer_class = serializers.PitchRetrieveSerializer
-    
+
+
+
+
+
+
+class PitchListView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = Pitchfilter
+    ordering_fields = ['price_per_hour', 'created_at']
+    ordering = ['created_at']
+
+    def _is_super_admin(self):
+        user = self.request.user
+        return user.is_authenticated and user.groups.filter(name="SuperAdmin").exists()
+       
+
+
+    def get_serializer_class(self):
+        if self._is_super_admin():
+            return serializers.PitchAdminListSerializer
+        return serializers.PitchListSerializer
+
+    def get_queryset(self):
+        qs = Pitch.objects.select_related('venue')
+        if not self._is_super_admin():
+            qs = qs.filter(is_active=True)
+        return qs    
+

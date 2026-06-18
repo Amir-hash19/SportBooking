@@ -28,5 +28,11 @@ urlpatterns = [
         "pitch/<int:pk>/",
         views.RetrievePitchView.as_view(),
         name="pitch-detail"
+    ),
+
+    path(
+        "pitchs/list/",
+        views.PitchListView.as_view(),
+        name="pitch-list-by-permission"
     )
 ]
