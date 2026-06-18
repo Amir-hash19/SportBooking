@@ -69,7 +69,7 @@ class PitchScheduleSerializer(serializers.ModelSerializer):
         if start >= end:
             raise serializers.ValidationError("Invalid time range")
 
-        return attrs
+        return attrs 
 
     def validate_day_of_week(self, value):
         allowed = ["saturday","sunday","monday","tuesday","wednesday","thursday","friday"]
@@ -124,7 +124,7 @@ class PitchSerializer(serializers.ModelSerializer):
         if not venue:
             raise serializers.ValidationError("You do not have any venue.")
 
-        schedules_data = validated_data.pop("schedules")
+        schedules_data = validated_data.pop("schedules", [])
         pitch = Pitch.objects.create(venue=venue, **validated_data)
 
         for s in schedules_data:
