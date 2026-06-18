@@ -73,3 +73,11 @@ def merge_time_ranges(schedules):
             merged.append([current_start, current_end])
 
     return merged
+
+
+
+
+WEEKDAY_MAP = {
+    0: "monday", 1: "tuesday", 2: "wednesday",
+    3: "thursday", 4: "friday", 5: "saturday", 6: "sunday",
+}
