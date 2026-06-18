@@ -41,7 +41,7 @@ class Booking(models.Model):
             models.Index(fields=["user", "status"]),
             models.Index(fields=["expires_at"]), 
         ]
-        
+
         constraints = [
             models.UniqueConstraint(
                 fields=["user"],
@@ -50,11 +50,30 @@ class Booking(models.Model):
             )
         ]    
 
+
+    def calculate_total_price(self):
+        start = datetime.combine(self.booking_date, self.start_time)
+        end = datetime.combine(self.booking_date, self.end_time)
+        duration = (end - start).total_seconds() / 3600
+
+        is_weekend = self.booking_date.weekday() in [4, 5]
+        hourly_price = (
+            self.pitch.weekend_price
+            if is_weekend and self.pitch.weekend_price
+            else self.pitch.price_per_hour
+        )
+        return hourly_price * duration    
+
+
+
     def save(self, *args, **kwargs):
         if not self.tracking_code:
             self.tracking_code = uuid.uuid4().hex[:10].upper()
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(minutes=10)
+        if not self.total_price:
+            self.total_price = self.calculate_total_price()
+            
         super().save(*args, **kwargs)
 
 
