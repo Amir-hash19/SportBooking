@@ -1,4 +1,3 @@
-import pytest
 from rest_framework.test import APIClient, APITestCase
 from django.urls import reverse
 from rest_framework import status
@@ -8,6 +7,7 @@ from backend.apps.accounts.models import ComplexManagerRequest
 from django.contrib.auth.models import Group
 from django.core.cache import cache
 from .models import Venue, Pitch
+
 
 User = get_user_model()
 
@@ -23,7 +23,7 @@ class ListVenuetests(APITestCase):
         self.user = User.objects.create_user(
             name = "testuser2",
             last_name = "testuser_tes2t",
-            phone_number = "+989124444444",
+            phone_number = "+9891244444",
             password="oldpassword123"
         )
         self.url = reverse("list-venue")
@@ -31,7 +31,7 @@ class ListVenuetests(APITestCase):
         self.manager = User.objects.create_user(
             name = "managertest1",
             last_name = "managertest1",
-            phone_number = "+989125555555",
+            phone_number = "+9891255555",
             password="oldpassword123",
             is_complex_manager = True
         )
@@ -39,7 +39,7 @@ class ListVenuetests(APITestCase):
             manager = self.manager,
             venue_name = "test_venue",
             address = "tehran, tajrish, yekta, num1",
-            phone = "+989955555555"
+            phone = "+989955555"
         )
 
     def test_list_venues(self):

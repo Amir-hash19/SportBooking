@@ -141,7 +141,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def is_super_admin(self):
-        return self.groups.filter(name="Super Admin").exists()
+        return self.groups.filter(name="SuperAdmin").exists()
 
     def __str__(self):
         return f"{self.name} - {self.last_name}"

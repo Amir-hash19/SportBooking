@@ -1,4 +1,3 @@
-import pytest
 from rest_framework.test import APIClient, APITestCase
 from django.urls import reverse
 from rest_framework import status
@@ -9,6 +8,7 @@ from django.contrib.auth.models import Group
 from django.core.cache import cache
 
 
+
 User = get_user_model()
 
 
@@ -17,7 +17,7 @@ class UserChangePasswordTest(APITestCase):
         self.user = User.objects.create_user(
             name = "testuser",
             last_name = "testuser_test",
-            phone_number = "+989121111111",
+            phone_number = "+9891211111",
             password="oldpassword123"
         )
 
@@ -63,7 +63,7 @@ class ListUserRequestManagerTests(APITestCase):
         self.admin = User.objects.create_user(
             name = "admintest",
             last_name = "adminuser_test2",
-            phone_number = "+989122222222",
+            phone_number = "+9891222222",
             password="adminpassword123"
         )
 
@@ -77,7 +77,7 @@ class ListUserRequestManagerTests(APITestCase):
         self.user = User.objects.create_user(
             name = "testuser2",
             last_name = "testuser_test2",
-            phone_number = "+989133333333",
+            phone_number = "+9891333333",
             password="oldpassword123"
         )
 
