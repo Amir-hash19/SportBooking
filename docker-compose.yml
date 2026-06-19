@@ -1,0 +1,63 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sport-booking-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: amir112233
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d sport-booking-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: booking-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: booking-django
+    restart: unless-stopped
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      DB_NAME: sport-booking-db
+      DB_USER: admin
+      DB_PASSWORD: amir112233
+      DB_HOST: db
+      DB_PORT: 5432
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+      DJANGO_SETTINGS_MODULE: backend.settings
+
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
