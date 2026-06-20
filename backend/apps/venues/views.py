@@ -1,5 +1,6 @@
 import logging
 
+from datetime import datetime, timedelta, date as date_type
 from datetime import datetime, timedelta, time
 from django.db import IntegrityError
 from django.utils.decorators import method_decorator
@@ -22,7 +23,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from . import serializers
 from .models import Venue, Pitch,PitchSchedule,Image
-
+from backend.apps.bookings.models import Booking
 from backend.apps.venues.mixins import VenueCreateMixin
 
 from backend.apps.accounts.throttles import VenueCreateThrottle, VenueListThrottle
@@ -111,53 +112,74 @@ class PitchCreateView(APIView):
 
 
 
+
+
 class PitchAvailableSlotsAPIView(APIView):
-    """
-        API endpoint for retrieving available booking slots for a pitch.
-        Generates time slots based on pitch schedules and a fixed slot duration,
-        returning available intervals for a specific day.
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pitch_id):
-        """
-            Return available time slots for the given pitch and day.
-        """
-        day = int(request.query_params.get("day"))
-        slot_minutes = int(request.query_params.get("slot", 30))
-
-        pitch = Pitch.objects.get(id=pitch_id)
-
-        schedules = PitchSchedule.objects.filter(
-            pitch=pitch,
-            day_of_week=day
-        )
-
        
+        day_str = request.query_params.get("day")
+        date_str = request.query_params.get("date")  
+        slot_minutes = int(request.query_params.get("slot", 60))
+
+        if not day_str or not date_str:
+            return Response(
+                {"detail": "data or day must be given."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            day = int(day_str)
+            booking_date = date_type.fromisoformat(date_str)
+        except ValueError:
+            return Response({"detail": "data or day is invalid."}, status=400)
+
+        try:
+            pitch = Pitch.objects.get(id=pitch_id, is_active=True)
+        except Pitch.DoesNotExist:
+            return Response({"detail": "pitch did not."}, status=404)
+
+        schedules = PitchSchedule.objects.filter(pitch=pitch, day_of_week=day)
         merged_schedules = merge_time_ranges(schedules)
 
-        result = []
-
        
-        for start_time, end_time in merged_schedules:
+        booked = Booking.objects.filter(
+            pitch=pitch,
+            booking_date=booking_date,
+            status__in=["pending", "confirmed"],
+        ).values_list("start_time", "end_time")
 
-            current = datetime.combine(datetime.today(), start_time)
-            end = datetime.combine(datetime.today(), end_time)
+        booked_ranges = list(booked)
+
+        result = []
+        for start_time, end_time in merged_schedules:
+            current = datetime.combine(booking_date, start_time)
+            end = datetime.combine(booking_date, end_time)
 
             while current + timedelta(minutes=slot_minutes) <= end:
+                slot_start = current.time()
+                slot_end = (current + timedelta(minutes=slot_minutes)).time()
+
+                is_available = not any(
+                    slot_start < b_end and slot_end > b_start
+                    for b_start, b_end in booked_ranges
+                )
+
                 result.append({
-                    "start": current.time().strftime("%H:%M"),
-                    "end": (current + timedelta(minutes=slot_minutes)).time().strftime("%H:%M"),
-                    "is_available": True
+                    "start": slot_start.strftime("%H:%M"),
+                    "end": slot_end.strftime("%H:%M"),
+                    "is_available": is_available,
                 })
                 current += timedelta(minutes=slot_minutes)
 
         return Response({
             "pitch_id": pitch_id,
+            "date": date_str,
             "day": day,
             "slot_minutes": slot_minutes,
-            "slots": result
-        }, status=status.HTTP_200_OK)
+            "slots": result,
+        })
     
 
 

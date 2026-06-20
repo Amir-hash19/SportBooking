@@ -1,13 +1,13 @@
 import uuid
 import secrets
-from datetime import datetime, timezone, timedelta
-
+from datetime import datetime, timedelta
+from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db import models
 
 from backend.apps.accounts.models import UserAccount
 from backend.apps.venues.models import Pitch
-
+from django.utils import timezone
 
 
 
@@ -54,7 +54,7 @@ class Booking(models.Model):
     def calculate_total_price(self):
         start = datetime.combine(self.booking_date, self.start_time)
         end = datetime.combine(self.booking_date, self.end_time)
-        duration = (end - start).total_seconds() / 3600
+        duration = Decimal((end - start).total_seconds()) / Decimal(3600)
 
         is_weekend = self.booking_date.weekday() in [4, 5]
         hourly_price = (
