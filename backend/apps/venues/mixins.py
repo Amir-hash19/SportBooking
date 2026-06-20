@@ -6,7 +6,16 @@ logger = logging.getLogger(__name__)
 
 
 class VenueCreateMixin:
+    """
+        Mixin for handling venue creation with custom logging and response format.
+        Overrides default creation flow to provide structured responses and
+        log both success and failure events.
+    """
     def create(self, request, *args, **kwargs):
+        """
+            Validate input, create a venue instance, and return a formatted response.
+            Logs validation errors and successful creations with user context.
+        """
         serializer = self.get_serializer(data=request.data)
         
         if not serializer.is_valid():

@@ -12,6 +12,14 @@ from backend.apps.venues.validations import check_schedule_overlap
 
 
 class CreateVenueSerializer(serializers.ModelSerializer):
+
+    """
+    Serializer for creating a venue.
+
+    Ensures the authenticated user has venue management permissions
+    and automatically assigns them as the venue manager.
+    """
+
     class Meta:
         model=Venue
         fields = ["venue_name", "description",
@@ -21,12 +29,19 @@ class CreateVenueSerializer(serializers.ModelSerializer):
         "is_active"] 
 
     def validate(self, attrs):
+        """
+        Verify that the authenticated user is allowed to create venues.
+        """
         user = self.context["request"].user
         if not user.is_complex_manager:
             raise serializers.ValidationError("You are not a complex manager")
         return attrs
 
+
     def create(self, validated_data):
+        """
+        Create a venue and assign the authenticated user as its manager.
+        """
         user = self.context["request"].user
         return Venue.objects.create(manager=user, **validated_data)
 
@@ -35,6 +50,11 @@ class CreateVenueSerializer(serializers.ModelSerializer):
 
 
 class ListVenueSerializer(serializers.ModelSerializer):
+    """
+        Serializer for displaying venue details.
+        Includes additional administrative fields when the requesting
+        user is a superuser.
+    """
     class Meta:
         model = Venue
         fields = ["venue_name", "description", "address"
@@ -49,7 +69,7 @@ class ListVenueSerializer(serializers.ModelSerializer):
             data["is_active"] = instance.is_active
             data["is_verified"] = instance.is_verified
             data["updated_at"] = instance.updated_at
-            return data
+        return data
 
 
 
@@ -57,12 +77,19 @@ class ListVenueSerializer(serializers.ModelSerializer):
 
 
 class PitchScheduleSerializer(serializers.ModelSerializer):
+    """
+        Serializer for creating and validating pitch schedules.
+        Ensures valid operating hours and accepted weekday values.
+    """
 
     class Meta:
         model = PitchSchedule
         fields = ["day_of_week", "start_time", "end_time"]
 
     def validate(self, attrs):
+        """
+            Validate that the start time is earlier than the end time.
+        """
         start = attrs["start_time"]
         end = attrs["end_time"]
 
@@ -72,6 +99,9 @@ class PitchScheduleSerializer(serializers.ModelSerializer):
         return attrs 
 
     def validate_day_of_week(self, value):
+        """
+            Validate that the provided day of week is supported.
+        """
         allowed = ["saturday","sunday","monday","tuesday","wednesday","thursday","friday"]
         if value not in allowed:
             raise serializers.ValidationError(
@@ -85,6 +115,11 @@ class PitchScheduleSerializer(serializers.ModelSerializer):
 
 
 class PitchSerializer(serializers.ModelSerializer):
+    """
+        Serializer for creating and managing Pitch objects.
+        Handles nested schedule creation and validates overlapping time slots
+        both within the request payload and against existing database records.
+    """
     schedules = PitchScheduleSerializer(many=True)
 
     class Meta:
@@ -118,6 +153,10 @@ class PitchSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
+        """
+            Create a pitch under the user's managed venue and attach schedules.
+            Also validates against existing schedule overlaps in the database.
+        """
         user = self.context["request"].user
 
         venue = getattr(user, "managed_venue", None)
@@ -139,6 +178,11 @@ class PitchSerializer(serializers.ModelSerializer):
 
 
 class PitchRetrieveSerializer(serializers.ModelSerializer):
+    """
+        Serializer for retrieving detailed Pitch information.
+        Includes computed venue name along with full pitch attributes
+        for read-only detailed views.
+    """
     venue_name = serializers.CharField(source='venue.venue_name', read_only=True)
     class Meta:
         model  = Pitch
@@ -151,6 +195,11 @@ class PitchRetrieveSerializer(serializers.ModelSerializer):
 
 
 class PitchListSerializer(serializers.ModelSerializer):
+    """
+        Serializer for listing Pitch objects.
+        Provides a lightweight representation of pitch data including
+        basic attributes and the related venue name.
+    """
     venue_name = serializers.CharField(source='venue.venue_name', read_only=True)
     
     class Meta:
@@ -172,6 +221,11 @@ class PitchListSerializer(serializers.ModelSerializer):
 
 
 class PitchAdminListSerializer(PitchListSerializer):
+    """
+        Admin serializer for listing Pitch objects.
+        Extends the public list serializer by including administrative
+        fields such as activity status and timestamps.
+    """
     class Meta(PitchListSerializer.Meta):
         fields = PitchListSerializer.Meta.fields + ["is_active","created_at","updated_at"]
         
