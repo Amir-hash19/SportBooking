@@ -32,7 +32,7 @@ pytest-django
 # kavenegar==1.4.2
 
 # # Production Server
-# gunicorn==23.0.0
+gunicorn==23.0.0
 
 
 # # Code Documentation tools
