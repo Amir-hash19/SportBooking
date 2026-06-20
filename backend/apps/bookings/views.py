@@ -29,10 +29,12 @@ from .services import create_booking, get_available_slots, process_mock_payment
 
 
 
-
-
-
 class PitchAvailableSlotsAPIView(APIView):
+    """
+    Return available time slots for a pitch 
+    on a given date. Query params: `date` (YYYY-MM-DD),
+    `slot` (minutes, default 60).
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pitch_id):
@@ -66,6 +68,10 @@ class PitchAvailableSlotsAPIView(APIView):
 
 
 class BookingCreateView(APIView):
+    """
+    Create a new booking for the authenticated user. 
+    Returns 409 on time conflict.
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -87,6 +93,10 @@ class BookingCreateView(APIView):
     
 
 class BookingPayView(APIView):
+    """
+    Process mock payment for a pending booking. 
+    Returns 400 if payment conditions are not met.
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):

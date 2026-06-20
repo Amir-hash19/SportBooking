@@ -12,6 +12,12 @@ from django.utils import timezone
 
 
 class Booking(models.Model):
+    """
+
+    Represents a pitch booking. Auto-generates tracking_code, expires_at (10 min),
+    and total_price on save. One pending booking allowed per user at a time.
+
+    """
     STATUS_CHOICES = [
         ("pending", "Pending"),
         ("confirmed", "Confirmed"),
@@ -52,6 +58,9 @@ class Booking(models.Model):
 
 
     def calculate_total_price(self):
+
+        """Calculate price based on duration and weekend/weekday hourly rate."""
+
         start = datetime.combine(self.booking_date, self.start_time)
         end = datetime.combine(self.booking_date, self.end_time)
         duration = Decimal((end - start).total_seconds()) / Decimal(3600)
@@ -67,6 +76,9 @@ class Booking(models.Model):
 
 
     def save(self, *args, **kwargs):
+         
+        """Auto-populate tracking_code, expires_at, and total_price before saving."""
+
         if not self.tracking_code:
             self.tracking_code = uuid.uuid4().hex[:10].upper()
         if not self.expires_at:
@@ -79,6 +91,9 @@ class Booking(models.Model):
 
 
 class Payment(models.Model):
+
+    """Stores payment result for a booking. One payment per booking."""
+    
     booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name="payment")
     amount = models.DecimalField(max_digits=10, decimal_places=0)
     status = models.CharField(

@@ -2,7 +2,10 @@ from rest_framework import serializers
 from .models import Booking, Payment
 
 
+
+
 class BookingCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating a booking. Validates that start_time is before end_time."""
     class Meta:
         model = Booking
         fields = ["pitch", "booking_date", "start_time", "end_time"]
@@ -14,6 +17,7 @@ class BookingCreateSerializer(serializers.ModelSerializer):
 
 
 class BookingDetailSerializer(serializers.ModelSerializer):
+    """Read-only serializer for booking details including price, status, and tracking code."""
     class Meta:
         model = Booking
         fields = [
@@ -24,6 +28,7 @@ class BookingDetailSerializer(serializers.ModelSerializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
+    """Read-only serializer for payment result data."""
     class Meta:
         model = Payment
         fields = ["id", "amount", "status", "transaction_id", "created_at"]
