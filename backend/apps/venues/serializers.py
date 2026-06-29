@@ -63,9 +63,10 @@ class ListVenueSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
+        request = self.context.get("request")
         data = super().to_representation(instance)
 
-        if self.context["request"].user.is_superuser:
+        if request and request.user.is_superuser:
             data["is_active"] = instance.is_active
             data["is_verified"] = instance.is_verified
             data["updated_at"] = instance.updated_at

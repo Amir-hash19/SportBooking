@@ -15,50 +15,7 @@ class Venue(models.Model):
     activation and verification statuses to control visibility and usage
     within the system.
 
-    Attributes:
-        manager (UserAccount):
-            The user account responsible for managing the venue.
-            A one-to-one relationship ensures that each manager can own
-            only one venue.
-
-        venue_name (str):
-            The name of the venue.
-
-        description (str):
-            An optional detailed description of the venue.
-
-        address (str):
-            The physical address of the venue.
-
-        phone (str):
-            A unique contact phone number for the venue.
-
-        facilities (str):
-            Optional information about available facilities and amenities.
-
-        rules (str):
-            Optional venue-specific rules and regulations.
-
-        cancellation_policy (str):
-            Optional description of booking cancellation terms.
-
-        is_active (bool):
-            Indicates whether the venue is currently active and available
-            for public use.
-
-        is_verified (bool):
-            Indicates whether the venue has been reviewed and approved
-            by the platform.
-
-        created_at (datetime):
-            Timestamp when the venue record was created.
-
-        updated_at (datetime):
-            Timestamp when the venue record was last updated.
-
-        slug (str):
-            A unique URL-friendly identifier for the venue.
-
+ 
     Meta:
         ordering:
             Orders venues by creation date in descending order.
@@ -116,53 +73,6 @@ class Pitch(models.Model):
     about the sport type, playing surface, capacity, pricing, and available
     amenities. The model supports different pricing for weekends and allows
     administrators to control whether a pitch is available for booking.
-
-    Attributes:
-        venue (Venue):
-            The venue that owns and contains this pitch.
-
-        pitch_name (str):
-            The name or identifier of the pitch within the venue.
-
-        sport_type (str):
-            The type of sport supported by the pitch.
-            Available options include football, futsal, volleyball, and tennis.
-
-        surface_type (str):
-            The playing surface material of the pitch.
-            Available options include grass, artificial turf, and parquet.
-
-        capacity (int):
-            The maximum number of participants the pitch can accommodate.
-
-        price_per_hour (Decimal):
-            The standard hourly rental price for the pitch.
-
-        weekend_price (Decimal | None):
-            The hourly rental price during weekends. If not specified,
-            the value of ``price_per_hour`` should be used.
-
-        has_lighting (bool):
-            Indicates whether the pitch has lighting facilities for
-            evening or night usage.
-
-        has_changing_room (bool):
-            Indicates whether changing rooms are available.
-
-        has_parking (bool):
-            Indicates whether parking facilities are available.
-
-        has_cafeteria (bool):
-            Indicates whether a cafeteria or refreshment area is available.
-
-        is_active (bool):
-            Indicates whether the pitch is currently available for booking.
-
-        created_at (datetime):
-            Timestamp when the pitch record was created.
-
-        updated_at (datetime):
-            Timestamp when the pitch record was last updated.
 
     Meta:
         db_table:

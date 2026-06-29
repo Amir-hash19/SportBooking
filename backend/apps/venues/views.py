@@ -58,7 +58,7 @@ class ListVenueView(ListAPIView):
         performance.
     """
     permission_classes = [IsAuthenticated]
-    throttle_classes = [VenueListThrottle]
+    # throttle_classes = [VenueListThrottle]
     queryset = Venue.objects.select_related("manager").order_by("-created_at")
     serializer_class = serializers.ListVenueSerializer
     pagination_class = VenuePagination
