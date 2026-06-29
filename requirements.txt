@@ -28,12 +28,13 @@ django-debug-toolbar==6.3.0
 django-redis==5.4.0
 pytest
 pytest-django
+locust
 # # SMS Provider (Kavenegar)
 # kavenegar==1.4.2
 
 # # Production Server
-# gunicorn==23.0.0
-
+gunicorn==23.0.0
+whitenoise==6.7.0
 
 # # Code Documentation tools
 drf-yasg==1.21.8
