@@ -28,6 +28,14 @@ from .services import create_booking, get_available_slots, process_mock_payment
 
 
 
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiExample,
+    OpenApiResponse,
+)
+
+from drf_spectacular.utils import extend_schema
+    
 
 class PitchAvailableSlotsAPIView(APIView):
     """
@@ -37,6 +45,10 @@ class PitchAvailableSlotsAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+            summary="check availible pitch for booking.",
+            description="users can check the available pitch."
+    )
     def get(self, request, pitch_id):
         date_str = request.query_params.get("date")
         slot_minutes = request.query_params.get("slot", 60)
@@ -74,6 +86,13 @@ class BookingCreateView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+            summary="booking the pitch by users",
+            request=BookingCreateSerializer,
+            responses={
+                201: BookingDetailSerializer
+            }
+    )
     def post(self, request):
         serializer = BookingCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -99,6 +118,11 @@ class BookingPayView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+
+    @extend_schema(
+            summary="user can pay the payment.",
+            description="payment proccess is a mock!"
+    )
     def post(self, request, pk):
         try:
             booking = Booking.objects.get(pk=pk, user=request.user)

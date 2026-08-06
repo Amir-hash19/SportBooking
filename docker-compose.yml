@@ -15,6 +15,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+     - booking_network
+
+      
       
   locust:
     image: locustio/locust
@@ -28,6 +32,8 @@ services:
       --host=http://web:8000
     depends_on:
       - web    
+    networks:
+     - booking_network  
 
 
   redis:
@@ -41,6 +47,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+     - booking_network
+
 
   web:
     build: .
@@ -73,7 +82,15 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    networks:
+     - booking_network    
 
 volumes:
   postgres_data:
   redis_data:
+
+
+networks:
+    booking_network:
+      driver: bridge
+  

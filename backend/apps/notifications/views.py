@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from .models import Notification
 from .serializers import NotificationSerializer, NotificationCountSerializer
 
+from drf_spectacular.utils import extend_schema
 
 class NotificationListView(ListAPIView):
     """List notifications for the authenticated user. Filter by ?is_read=true/false."""
@@ -26,6 +27,9 @@ class NotificationMarkReadView(APIView):
     """Mark a single notification as read. Returns 404 if not found or not owned by user."""
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+            summary="mark notifications as read by admin."
+    )
     def patch(self, request, pk):
         try:
             notification = Notification.objects.get(pk=pk, user=request.user)
@@ -40,6 +44,7 @@ class NotificationMarkAllReadView(APIView):
     """Mark all unread notifications as read. Returns count of updated records."""
     permission_classes = [IsAuthenticated]
 
+    
     def patch(self, request):
         updated = Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
         return Response({"marked_read": updated})
@@ -49,6 +54,10 @@ class NotificationUnreadCountView(APIView):
     """Return the count of unread notifications for the authenticated user."""
     permission_classes = [IsAuthenticated]
 
+
+    @extend_schema(
+            summary="count unread notifications by admin."
+    )
     def get(self, request):
         count = Notification.objects.filter(user=request.user, is_read=False).count()
         serializer = NotificationCountSerializer({"unread_count": count})

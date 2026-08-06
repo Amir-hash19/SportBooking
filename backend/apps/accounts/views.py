@@ -23,6 +23,15 @@ from .paginations import UserPagination
 from .permissions import IsSuperAdmin
 from .throttles import UserListThrottle
 
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiExample,
+    OpenApiResponse,
+)
+
+from drf_spectacular.utils import extend_schema
+    
+
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +64,10 @@ class CreateUserAccountView(APIView):
 
     permission_classes = [AllowAny]
 
+    @extend_schema(
+            summary="user registration.",
+            request=serializers.UserSignupSerializer
+    )
     def post(self, request):
         logger.info(f"User signup attempt from IP: {self.get_client_ip(request)}")
 
@@ -164,6 +177,11 @@ class LoginView(APIView):
 
     permission_classes = [AllowAny]
 
+    @extend_schema(
+            summary="user login.",
+            request=serializers.LoginSerializer
+    )
+
     def post(self, request):
         serializer = serializers.LoginSerializer(data=request.data)
 
@@ -224,6 +242,10 @@ class CreateAdminUserView(APIView):
     permission_classes = [IsSuperAdmin]
     serializer_class = serializers.AddAdminUserSerializer
 
+    @extend_schema(
+            summary="add user admin account.",
+            request=serializers.AddAdminUserSerializer
+    )
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
 
@@ -279,6 +301,11 @@ class SubmitComplexManagerRequestView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.CreateComplexManagerRequestSerializer
 
+
+    @extend_schema(
+            summary="send complex manager request.",
+            request=serializers.CreateComplexManagerRequestSerializer
+    )
     def post(self, request):
         serializer = self.serializer_class(
             data=request.data, context={"request": request}
@@ -432,6 +459,11 @@ class LogOutView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+            summary="user logout",
+            description="user must send the refresh token",
+            
+    )
     def post(self, request):
         try:
             refresh_token = request.data.get("refresh")
@@ -463,6 +495,12 @@ class ChangePasswordView(APIView):
     throttle_classes = [UserListThrottle]
     serializer_class = serializers.ChangePasswordSerializer
 
+
+
+    @extend_schema(
+            summary="user can change their password.",
+            request=serializers.ChangePasswordSerializer
+    )
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
 
@@ -514,6 +552,10 @@ class RemoveAdminUserView(CreateAPIView):
 
     serializer_class = serializers.RemoveAdminUserSerializer
 
+    @extend_schema(
+            summary="admin can remove other users.",
+            request=serializers.RemoveAdminUserSerializer
+    )
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
@@ -555,6 +597,10 @@ class ReviewUserManagerRequestView(UpdateAPIView):
     lookup_field = "pk"
     queryset = ComplexManagerRequest.objects.all()
 
+
+    @extend_schema(
+            request=serializers.ReviewUserManagerRequestSerializer
+    )
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)

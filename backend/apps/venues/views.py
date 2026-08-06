@@ -36,6 +36,14 @@ from .serializers import PitchSerializer, PitchScheduleSerializer
 from .utils import merge_time_ranges
 from .filters import Pitchfilter
 
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiExample,
+    OpenApiResponse,
+)
+
+from drf_spectacular.utils import extend_schema
+
 
 
 class CreateVenueView(VenueCreateMixin, CreateAPIView):
@@ -100,6 +108,14 @@ class PitchCreateView(APIView):
     """
     permission_classes = [IsComplexManager]
     serializer_class = serializers.PitchSerializer
+
+    @extend_schema(
+            summary="create a pitch by complex manager",
+            request=serializers.PitchSerializer,
+            responses={
+                201: serializers.PitchSerializer
+            }
+    )
     def post(self, request):
         serializer = serializers.PitchSerializer(
             data=request.data,
@@ -116,6 +132,7 @@ class PitchCreateView(APIView):
 
 class PitchAvailableSlotsAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
 
     def get(self, request, pitch_id):
        
