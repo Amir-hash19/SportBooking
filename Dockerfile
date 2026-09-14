@@ -12,12 +12,11 @@ RUN apt-get update && apt-get install -y \
 
 COPY requirements.txt .
 
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
+EXPOSE 8000
 
-ENTRYPOINT ["./entrypoint.sh"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && exec gunicorn backend.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 4 --threads 2 --worker-class gthread --timeout 60"]
