@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: redis
   namespace: sport-booking
+
 spec:
   replicas: 2
 
@@ -16,12 +17,27 @@ spec:
         app: redis
 
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: redis
-          image: redis:7-alpine
+          image: localhost:5000/redis:latest
+          imagePullPolicy: Always
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
           ports:
             - containerPort: 6379
+              protocol: TCP
 
           readinessProbe:
             exec:
@@ -43,6 +59,9 @@ spec:
             requests:
               cpu: 500m
               memory: 128Mi
+
             limits:
               cpu: 1000m
               memory: 512Mi
+
+
