@@ -3,12 +3,16 @@ from django.db import models
 
 
 class Notification(models.Model):
+    """
+    Stores in-app notifications for users.
+    Supports filtering by type and read status.
+    """
     class NotificationType(models.TextChoices):
-        BOOKING_CREATED = "booking_created", "رزرو جدید"
-        BOOKING_CONFIRMED = "booking_confirmed", "تایید رزرو"
-        BOOKING_CANCELLED = "booking_cancelled", "لغو رزرو"
-        PAYMENT_SUCCESS = "payment_success", "پرداخت موفق"
-        SYSTEM_ALERT = "system_alert", "اخطار سیستمی"
+        BOOKING_CREATED = "booking_created", "Booking Created"
+        BOOKING_CONFIRMED = "booking_confirmed", "Booking Confirmed"
+        BOOKING_CANCELLED = "booking_cancelled", "Booking Cancelled"
+        PAYMENT_SUCCESS = "payment_success", "Payment Successful"
+        SYSTEM_ALERT = "system_alert", "System Alert"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"
