@@ -18,10 +18,23 @@ spec:
         app: backend
 
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: backend
 
-          image: localhost:5000/sport-booking:1.0.0
+          image: localhost:5000/sport-booking:1.0.1
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
           ports:
             - containerPort: 8000
