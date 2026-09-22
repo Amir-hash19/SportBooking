@@ -6,7 +6,7 @@ metadata:
   namespace: sport-booking
 
 spec:
-  replicas: 3
+  replicas: 2
 
   selector:
     matchLabels:
@@ -73,9 +73,9 @@ spec:
 
           resources:
             requests:
-              cpu: 1000m
+              cpu: 800m
               memory: 512Mi
 
             limits:
-              cpu: 2000m
+              cpu: 1200m
               memory: 1Gi

@@ -18,23 +18,12 @@ spec:
         app: postgres
 
     spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-        runAsGroup: 999
-        fsGroup: 999
-        seccompProfile:
-          type: RuntimeDefault
-
       containers:
         - name: postgres
-          image: postgres:15
+          image: localhost:5000/postgres:15
 
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
+            allowPrivilegeEscalation: true
 
           ports:
             - containerPort: 5432
@@ -97,5 +86,3 @@ spec:
         - name: postgres-storage
           persistentVolumeClaim:
             claimName: postgres-pvc
-
-
