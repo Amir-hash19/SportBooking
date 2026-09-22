@@ -5,6 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.core.cache import cache
+from django.db import connection
+from django.http import JsonResponse
+
 from .models import Notification
 from .serializers import NotificationSerializer, NotificationCountSerializer
 
@@ -62,3 +66,47 @@ class NotificationUnreadCountView(APIView):
         count = Notification.objects.filter(user=request.user, is_read=False).count()
         serializer = NotificationCountSerializer({"unread_count": count})
         return Response(serializer.data)
+    
+
+
+
+
+
+
+
+
+def liveness(request):
+    #this endpoint is used by Kubernetes
+    return JsonResponse(
+        {
+            "status":"OK"
+        }
+    )
+
+
+def readiness(request):
+    checks = {}
+
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        checks["database"] = "OK"   
+    except Exception:
+        checks["database"] = "FAILD!"    
+
+    try:
+        cache.set("healthcheck", "ok", timeout=10)    
+        if cache.get("healthcheck") != "ok":
+            raise RuntimeError("Redis read/write faild")
+        checks["redis"] = "ok"
+    except Exception:
+            checks["redis"] = "failed"
+    if all(status == "ok" for status in checks.values()):
+                return JsonResponse({"status": "ready","checks": checks,})
+    return JsonResponse({
+         
+        "status": "not_ready",
+        "checks": checks,
+
+    }, status=503)
