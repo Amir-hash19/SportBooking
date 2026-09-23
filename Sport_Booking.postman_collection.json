@@ -1,0 +1,579 @@
+{
+  "info": {
+    "_postman_id": "f1afafaf-0eac-4501-8843-511da2f4e401",
+    "name": "Sport_Booking",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "42911537"
+  },
+  "item": [
+    {
+      "name": "/api/v1/user/signup/",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/user/login/",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/users/super-admin/promotions/",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/manager-request/",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgwMjM4OTk2LCJpYXQiOjE3ODAyMzUzOTYsImp0aSI6IjQ3ZjU0YzM4YTk2ZDQ2ZTdiNDFhZmRlZmFmNGRlYjc2IiwidXNlcl9pZCI6IjcifQ.z90LJE-r-6W89bWm6G8TbndvV-UEhBJaPIAj_B1Z-bI",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/manager-request/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "manager-request",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/user/list/?is_staff=true&search=admin",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgwMjM4OTk2LCJpYXQiOjE3ODAyMzUzOTYsImp0aSI6IjQ3ZjU0YzM4YTk2ZDQ2ZTdiNDFhZmRlZmFmNGRlYjc2IiwidXNlcl9pZCI6IjcifQ.z90LJE-r-6W89bWm6G8TbndvV-UEhBJaPIAj_B1Z-bI",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/user/list/?is_staff=true&search=admin",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "list",
+            ""
+          ],
+          "query": [
+            {
+              "key": "is_staff",
+              "value": "true"
+            },
+            {
+              "key": "search",
+              "value": "admin"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/user/me",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgwMjQzMTkwLCJpYXQiOjE3ODAyMzk1OTAsImp0aSI6IjAwZWViNTcyMDE0MjQ1MjA5MzBkOWY1OGE4OTE4ODRlIiwidXNlcl9pZCI6IjcifQ.AFoy__VmOvhNb4eOe7vgfZDhEF4O2bUz4-4YlxXj6Yw",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/user/me",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/user/update/",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgwMzIwODc2LCJpYXQiOjE3ODAzMTcyNzYsImp0aSI6IjgxZjNjYTJkYjM4ZjRhMjVhZDgyMTMzZWM4ZTYxYjliIiwidXNlcl9pZCI6IjcifQ.U-uiiR-D4MCnoVGAfb81-2ScT0NpeEq9BtQWevyqTrE",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Amirhosein\",\n    \"profile\": {\n        \"address\": \"Tehran\",\n        \"gender\": \"1\",\n        \"second_number\":\"+989123398896\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/user/update/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "update",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/user/logout/",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgwMzI3MjY3LCJpYXQiOjE3ODAzMjM2NjcsImp0aSI6IjFjODQzMzE0OWU4MzQ0NmE4YzI0OWY5ZTg0MTc2MzllIiwidXNlcl9pZCI6IjcifQ.CQzEBO19ClVKhtMjs5ok-uGaGESlacYxEt7c2ko4fmk",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"refresh\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MDQ5NjQ2NywiaWF0IjoxNzgwMzIzNjY3LCJqdGkiOiJiNDQzZDA5YTQ5NjM0OTY0ODhkNDZkODc1OWEyYjNhZCIsInVzZXJfaWQiOiI3In0.quqjocI0Ynk8WviHjspbNHAGcdxme9YIOlnyasPolBw\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/user/logout/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "logout",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/user/password/change/",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgwMzI3MjY3LCJpYXQiOjE3ODAzMjM2NjcsImp0aSI6IjFjODQzMzE0OWU4MzQ0NmE4YzI0OWY5ZTg0MTc2MzllIiwidXNlcl9pZCI6IjcifQ.CQzEBO19ClVKhtMjs5ok-uGaGESlacYxEt7c2ko4fmk",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"old_password\":\"Amirhosein13$\",\n    \"new_password\":\"Amir112233$\",\n    \"confirm_password\":\"Amir112233$\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/user/password/change/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "password",
+            "change",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/admin/requests/1/review/",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgwNTY2NzI0LCJpYXQiOjE3ODA1NjMxMjQsImp0aSI6IjBhNGQ1NjllZmIzNzRkODM4MGUwNjA1ZTQ1ZGJlMDBiIiwidXNlcl9pZCI6IjEifQ.1bIOhkFOmGSpKDt01z_n5PRUHg8Wbjy0GsZJVjqUIJY",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"status\":\"approved\",\n    \"review_note\":\"documents reviewed and your request is accepted\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/admin/requests/1/review/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "requests",
+            "1",
+            "review",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/admin/list/requests/",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/venue/",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMjUzMDMxLCJpYXQiOjE3ODEyNDk0MzEsImp0aSI6IjNhYTI4NDM5MmMxMjRhMWJiNmJkMzBmMmQyOTMxMDBkIiwidXNlcl9pZCI6IjEifQ.Cnx6_RqKos8fOeLKEE98GbwhtVHEd4SB1ugPlcXbkKg",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"venue_name\":\"amir-sport\",\n    \"description\":\"sport retains sanity of people\",\n    \"address\":\"tehran-tajrish\",\n    \"facilities\":\"Khaye\",\n    \"rules\":\"No more rules\",\n    \"cancellation_policy\":\"pay then come\",\n    \"phone\":\"22759581\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/venue/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "venue",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/venues/",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMjUzMDMxLCJpYXQiOjE3ODEyNDk0MzEsImp0aSI6IjNhYTI4NDM5MmMxMjRhMWJiNmJkMzBmMmQyOTMxMDBkIiwidXNlcl9pZCI6IjEifQ.Cnx6_RqKos8fOeLKEE98GbwhtVHEd4SB1ugPlcXbkKg",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"venue_name\":\"amir-sport\",\n    \"description\":\"sport retains sanity of people\",\n    \"address\":\"tehran-tajrish\",\n    \"facilities\":\"Khaye\",\n    \"rules\":\"No more rules\",\n    \"cancellation_policy\":\"pay then come\",\n    \"phone\":\"22759581\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/venues/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "venues",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/pitch/",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/pitch/1",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/pitch/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "pitch",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/pitchs/list/",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxNzgwOTU1LCJpYXQiOjE3ODE3NzczNTUsImp0aSI6IjAzYzQ5ZDlkOGM2ZDRjMjY4ODAyNTAwYmVlZTFhMDE4IiwidXNlcl9pZCI6IjEifQ.jbCUDbp4HospdhEd1hFfSnWfrpFu88eojQtPCgngdZE",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/pitchs/list/?sport_type=volleyball&surface_type=parquet",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "pitchs",
+            "list",
+            ""
+          ],
+          "query": [
+            {
+              "key": "sport_type",
+              "value": "volleyball"
+            },
+            {
+              "key": "surface_type",
+              "value": "parquet"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "api/v1/pitches/1/slots/?date=2025-01-18&slot=120",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxOTUwNjAwLCJpYXQiOjE3ODE5NDcwMDAsImp0aSI6IjFkZmIxZjljZDJjNTQ1NWM5N2FmMzgxZTUzZTUxNjNhIiwidXNlcl9pZCI6IjEifQ.N06KD4T5vkuH85CB497oGSVnsZN_A0NbSqV0M1wEs7c",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/pitches/1/slots/?date=2025-01-18&slot=120",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "pitches",
+            "1",
+            "slots",
+            ""
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2025-01-18"
+            },
+            {
+              "key": "slot",
+              "value": "120"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/bookings/",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "/api/v1/bookings/1/pay/",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxOTUwNjAwLCJpYXQiOjE3ODE5NDcwMDAsImp0aSI6IjFkZmIxZjljZDJjNTQ1NWM5N2FmMzgxZTUzZTUxNjNhIiwidXNlcl9pZCI6IjEifQ.N06KD4T5vkuH85CB497oGSVnsZN_A0NbSqV0M1wEs7c",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/v1/bookings/1/pay/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "bookings",
+            "1",
+            "pay",
+            ""
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

@@ -24,6 +24,8 @@ urlpatterns = [
     # Add accounts URLs routing
     path("api/v1/", include("backend.apps.accounts.urls")),
     path("api/v1/", include("backend.apps.venues.urls")),
+    path("api/v1/", include("backend.apps.bookings.urls")),
+    path("api/v1/", include("backend.apps.notifications.urls")),
 ]
 
 
