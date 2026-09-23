@@ -7,3 +7,5 @@ class AccountsConfig(AppConfig):
 
     def ready(self):
         import backend.apps.accounts.signals
+
+        from . import metrics

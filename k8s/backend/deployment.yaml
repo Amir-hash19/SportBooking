@@ -28,7 +28,7 @@ spec:
       containers:
         - name: backend
 
-          image: localhost:5000/sport-booking:1.0.2
+          image: localhost:5000/sport-booking:1.0.6
 
           securityContext:
             allowPrivilegeEscalation: false

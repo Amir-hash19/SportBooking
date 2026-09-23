@@ -79,34 +79,18 @@ def liveness(request):
     #this endpoint is used by Kubernetes
     return JsonResponse(
         {
-            "status":"OK"
-        }
+            "status":"ok"
+        },status=status.HTTP_200_OK
     )
 
 
+
+
 def readiness(request):
-    checks = {}
-
-
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
-        checks["database"] = "OK"   
-    except Exception:
-        checks["database"] = "FAILD!"    
 
-    try:
-        cache.set("healthcheck", "ok", timeout=10)    
-        if cache.get("healthcheck") != "ok":
-            raise RuntimeError("Redis read/write faild")
-        checks["redis"] = "ok"
+        return JsonResponse({"status": "Ready!"})
     except Exception:
-            checks["redis"] = "failed"
-    if all(status == "ok" for status in checks.values()):
-                return JsonResponse({"status": "ready","checks": checks,})
-    return JsonResponse({
-         
-        "status": "not_ready",
-        "checks": checks,
-
-    }, status=503)
+        return JsonResponse({"status": "not ready"}, status=503)
