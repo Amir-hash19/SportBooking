@@ -43,3 +43,8 @@ drf-spectacular[sidecar]==0.28.0
 #code reformater
 black==25.1.0
 ruff==0.12.0
+
+
+
+# # Monitoring tools
+django-prometheus==2.5.0

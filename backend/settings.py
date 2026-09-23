@@ -39,6 +39,9 @@ INTERNAL_IPS = [
 
 # Application definition
 INSTALLED_APPS = [
+    # Monitoring Tool
+    "django_prometheus",
+
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -62,6 +65,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+
+    # Monitoring 
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     # debug toolbar
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     # Cors headers middleware
@@ -78,6 +84,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
+    # Monitoring
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 
