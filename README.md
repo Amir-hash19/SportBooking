@@ -1,6 +1,9 @@
 # 🏆 Sport Booking — Kubernetes Deployment
 
-> یک پلتفرم رزرو ورزشی که با عشق روی Kubernetes دیپلوی شده 😎
+                                   # DEVOPS Section 🌐
+
+
+ یک پلتفرم رزرو ورزشی که با عشق روی Kubernetes دیپلوی شده 😎
 
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -91,9 +94,9 @@ sport-booking/
 └── README.md
 ```
 
----
 
 ## 🚀 مراحل Deploy
+
 
 ### 1️⃣ پیش‌نیازها
 
@@ -308,7 +311,7 @@ MIT — for learning 𐦂𖨆𐀪𖠋 👥👥
 ---
 ---
 
-
+                                      #BackEnd Section 🔨
 
 
 # 🏟️ پلتفرم رزرو زمین ورزشی
