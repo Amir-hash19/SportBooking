@@ -1,3 +1,4 @@
+
 name: Django CI
 
 on:
@@ -13,8 +14,13 @@ on:
       - develop
       - release
 
+
+permissions:
+  contents: read
+
 jobs:
   test:
+    name: Django Tests
     runs-on: ubuntu-latest
 
     services:
@@ -27,7 +33,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres -d booking"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -59,6 +65,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
@@ -66,7 +74,52 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run migrations
-        run: python manage.py migrate
+        run: python manage.py migrate --noinput
 
       - name: Run tests
         run: python manage.py test
+
+  docker-build-push:
+    name: Docker Build and Push
+    runs-on: ubuntu-latest
+    needs: test
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/amir-hash19/sport-booking
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=short
+            type=raw,value=release,enable=${{ github.ref == 'refs/heads/release' }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
